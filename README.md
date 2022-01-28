@@ -27,6 +27,6 @@ We plan to use the following two APIs:
 - https://developers.google.com/maps for mapping the locations 
 
 ## Wireframe
-Wireframe screenshot ![here](./assets/wireframe/desktop-layout.jpg)  
+Wireframe screenshot ![here](./assets/wireframe/desktop-layout.JPG)  
 
-Mobile first design ![here](./assets/wireframe/mobile-layout.jpg)  
+Mobile first design ![here](./assets/wireframe/mobile-layout.JPG)  

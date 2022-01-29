@@ -23,10 +23,15 @@
 
         <!-- Search bar -->
         <section id="search-area">
-            <label id="search-label">Enter City Below</label>
-            <div id="search-row">
+            <form id="search-form">
+                <label id="search-label">Enter City Below</label>
                 <input type="text" id="city-search-input" placeholder="Let's find a brewery!">
-                <button id="search-btn">Cheers!</button>
+                <input type="submit" id="search-btn" value="Cheers!"></input>
+            </form>
+            <div id="choose-cities-area">
+                <ul class="cities-list" id="cities-list">
+                    <li class="city-option" id="current-location-option">Use my current location</li>
+                </ul>
             </div>
         </section>
 

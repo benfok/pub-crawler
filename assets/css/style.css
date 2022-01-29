@@ -1,5 +1,7 @@
 :root {
     --yellow: #ebdb51; 
+    --black: #000000;
+    --white: #ffffff;
 }
 
 body {
@@ -15,7 +17,7 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-bottom: solid black 8px;
+    border-bottom: solid var(--black) 8px;
 }
 
 h1 {
@@ -44,20 +46,26 @@ main {
 }
 
 section {
-    border: solid black 8px;
+    border: solid var(--black) 8px;
     width: 100%;
     margin-top: 2%;
 }
 
 #search-area {
-    background-color: black;
+    background-color: var(--black);
     color: var(--yellow);
     padding: 3%;
+}
 
+#search-form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 #search-label {
     font-weight: bold;
+    width: 90%;
 }
 
 #city-search-input {
@@ -65,22 +73,24 @@ section {
     width: 75%;
 }
 
-#search-row {
-    display: flex;
-    flex-direction: row;
-    /* justify-content:space-between; */
-}
-
 #search-btn {
     background-color: var(--yellow);
-    color: black;
+    color: var(--black);
     font-weight:bolder;
     padding: 1.5%;
     margin-top: 3%;
 }
 
+.city-option {
+    background-color: var(--yellow);
+    color: var(--black);
+    margin: 3% 0%;
+    padding: 2% 2% 2% 6%;
+    font-weight: bold;    
+}
+
 .results-area {
-    background-color: white;
+    background-color: var(--white);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -93,7 +103,7 @@ section {
 }
 
 #map-area {
-    background-color: white;
+    background-color: var(--white);
     text-align: center;
 }
 

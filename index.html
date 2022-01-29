@@ -4,14 +4,59 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/reset.css">
     <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@300&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
     <title>Pub Crawler</title>
 </head>
 <body>
     <header>
-
+        <h1>PubCrawler</h1>
     </header>
     <main>
+
+    <!-- Left column (in desktop view)     -->
+    <div class="column" id="first-column">
+
+        <!-- Search bar -->
+        <section id="search-area">
+            <label id="search-label">Enter City Below</label>
+            <div id="search-row">
+                <input type="text" id="city-search-input" placeholder="Let's find a brewery!">
+                <button id="search-btn">Cheers!</button>
+            </div>
+        </section>
+
+        <!-- Local results go here -->
+        <section id="local-results-area" class="results-area">
+            <h2 class="results-header" id="local-results-header">Local Results</h2>
+            <ul class="results-list" id="local-results-list">
+                <!-- Local results will go here -->
+            </ul>
+        </section>
+
+    </div>  
+    
+    <!-- Right column (in desktop view) -->
+    <div class = "column" id="second-column">
+
+        <!-- Placeholder for where the map will go -->
+        <section id="map-area">
+            <img src="assets/images/maps-placeholder.png">
+        </section>
+
+        <!-- Saved favorite pubs -->
+        <section class="results-area" id="favorite-results-area">
+            <h2 class="results-header" id="favorite-results-header">My Favorites</h2>
+            <ul class="results-list" id="favorite-results-list">
+                <!-- Favorites will go here -->
+            </ul>
+        </section>
+
+    </div>
 
     </main>
     <footer>

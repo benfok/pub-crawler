@@ -8,8 +8,6 @@ body {
     background-color: var(--yellow);
 }
 
-#map { position: absolute; top: 0; bottom: 0; width: 100%; }
-
 header {
     background-image: url("../images/header-img.JPG");
     background-size: 100vw;
@@ -150,6 +148,11 @@ section {
 #map-area {
     background-color: var(--white);
     text-align: center;
+}
+
+#map { 
+    width: 100%;
+    height: 400px;
 }
 
 

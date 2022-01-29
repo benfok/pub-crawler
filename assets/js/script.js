@@ -118,3 +118,12 @@ let getCities = function(searchEntry) {
         getCities(searchEntry.value);
         }
     });
+
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYmVuZm9rIiwiYSI6ImNrejBicjZodDE5MjkydnRiM3c4aGo3cGcifQ.pJzH9XLmK9bpN4Sjb4OSGg';
+    const map = new mapboxgl.Map({
+    container: 'map', // container ID
+    style: 'mapbox://styles/mapbox/streets-v11', // style URL
+    center: [-74.5, 40], // starting position [lng, lat]
+    zoom: 9 // starting zoom
+    });

@@ -9,7 +9,6 @@ body {
 }
 
 header {
-    
     background-image: url("../images/header-img.JPG");
     background-size: 100vw;
     /* height: auto; */
@@ -76,9 +75,16 @@ section {
 #search-btn {
     background-color: var(--yellow);
     color: var(--black);
-    font-weight:bolder;
     padding: 1.5%;
     margin-top: 3%;
+    font-weight: bold;
+    border-radius: 10px;
+    transition: all 400ms linear;
+}
+
+#search-btn:hover {
+    cursor: pointer;
+    background-color: var(--white);
 }
 
 .city-option {
@@ -86,7 +92,15 @@ section {
     color: var(--black);
     margin: 3% 0%;
     padding: 2% 2% 2% 6%;
-    font-weight: bold;    
+    font-weight: bold;   
+    transition: all 400ms linear; 
+    border-radius: 35px;
+    text-align: center;
+}
+
+.city-option:hover {
+    cursor: pointer;
+    background-color: var(--white);
 }
 
 .results-area {
@@ -102,14 +116,39 @@ section {
     font-size: 1.5em;
 }
 
+.brewery-list {
+    margin: 20px 0px;
+    padding: 4%;
+    border: solid var(--black) 5px;
+    border-radius: 25px;
+    background-color: var(--black);
+    color: var(--white);
+    text-align: center;
+}
+
+.brewery-name {
+    transition: all 400ms linear;
+    color: var(--yellow);
+}
+
+.brewery-list:hover {
+    cursor: pointer;
+}
+
+.brewery-list:hover > .brewery-name {
+    color: var(--white);
+}
+
+.brewery-name {
+    font-size: 1.3em;
+    font-weight: bold;
+    /* color: var(--yellow); */
+}
+
 #map-area {
     background-color: var(--white);
     text-align: center;
 }
-
-
-
-
 
 
 
@@ -129,5 +168,9 @@ section {
 
     .column {
         width: 95%;
+    }
+
+    #city-search-input {
+        width: 70%;
     }
 }

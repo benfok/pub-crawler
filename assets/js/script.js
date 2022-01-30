@@ -1,6 +1,9 @@
 let searchEntry = document.getElementById('city-search-input');
+let searchResults = document.getElementById('cities-list');
 let chosenLocale;
-
+let chosenBrewery;
+let mapStartLat; 
+let mapStartLong;
 
 // function API call to return 5 search results for location entered
 let getCities = function(searchEntry) {
@@ -15,7 +18,7 @@ let getCities = function(searchEntry) {
             return response.json();    
         })
         .then(function (data){
-            console.log(data);
+            // console.log(data);
             renderResults(data);
             })
         .catch(function (error) {
@@ -25,10 +28,8 @@ let getCities = function(searchEntry) {
     };
 
     let renderResults = function(data){
-        let searchResults = document.getElementById('cities-list');
-        // console.log(searchResults);
         // clear the search results
-        searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>';
+        clearSearch();
         // if no results returned display a message
         let str = '';
         if (data.length === 0) {
@@ -47,6 +48,10 @@ let getCities = function(searchEntry) {
         localeSelect();
     };
 
+    let clearSearch = function(){
+    searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>';        
+    };
+
     // when location is selected, run get breweries API
     let localeSelect = function(){
         let locales = document.querySelectorAll('.locations')
@@ -55,7 +60,21 @@ let getCities = function(searchEntry) {
             locale.addEventListener('click', function(){
             chosenLocale = locale;
             // console.log(chosenLocale);
+            clearSearch();
             getBreweries(chosenLocale);
+            });
+        });
+    };
+
+    let mapBrewery = function(){
+        let clickedBrewery = document.querySelectorAll('.brewery-list');
+        clickedBrewery.forEach(function(brewery){
+            brewery.addEventListener('click', function(){
+            chosenBrewery = brewery;
+            // console.dir(chosenBrewery);
+            mapStartLat = brewery.dataset.lat;
+            mapStartLong = brewery.dataset.long;
+            renderMap();
             });
         });
     };
@@ -104,7 +123,7 @@ let getCities = function(searchEntry) {
         // add breweries as a list
         searchResults.innerHTML += str;
         // need to add function to activate event listeners on the newly created <li>s for mapping
-        // mapLocation();
+        mapBrewery();
     };
 
     // event listener for the search button
@@ -118,3 +137,16 @@ let getCities = function(searchEntry) {
         getCities(searchEntry.value);
         }
     });
+
+    // code for map display
+    let renderMap = function(){
+    mapboxgl.accessToken = 'pk.eyJ1IjoiYmVuZm9rIiwiYSI6ImNrejBibzE4bDFhbzgyd213YXE3Ynp1MjAifQ.fbuWSwdUyN9SNuaJS_KLnw';
+    const map = new mapboxgl.Map({
+    container: 'map', // container ID
+    style: 'mapbox://styles/mapbox/streets-v11', // style URL
+    center: [mapStartLong, mapStartLat], // starting position [lng, lat]
+    zoom: 17 // starting zoom
+    });
+    //ads controls to map
+    map.addControl(new mapboxgl.NavigationControl());
+};

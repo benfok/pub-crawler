@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@300&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+    <!-- MapBox stylesheet` -->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
     <title>Pub Crawler</title>
 </head>
 <body>
@@ -50,7 +52,8 @@
 
         <!-- Placeholder for where the map will go -->
         <section id="map-area">
-            <img src="assets/images/maps-placeholder.png">
+            <div id="map"></div>
+            <!-- <img src="assets/images/maps-placeholder.png"> -->
         </section>
 
         <!-- Saved favorite pubs -->
@@ -67,6 +70,8 @@
     <footer>
 
     </footer>
+    <!-- Mapbox API script` -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
     <script src="./assets/js/script.js"></script>
 </body>
 </html>

@@ -1,9 +1,13 @@
 let searchEntry = document.getElementById('city-search-input');
 let searchResults = document.getElementById('cities-list');
-let chosenPub;
+let routeList = document.querySelector('.route-list');
+// let chosenPub;
+let chosenLocation;
 let mapStartLat; 
 let mapStartLong;
+let marker;
 let map;
+let nothing = turf.featureCollection([]);
 let apiKeyMap = 'pk.eyJ1IjoiYmVuZm9rIiwiYSI6ImNrejBibzE4bDFhbzgyd213YXE3Ynp1MjAifQ.fbuWSwdUyN9SNuaJS_KLnw';
 
 // function API call to return 5 search results for location entered
@@ -29,6 +33,7 @@ let getCities = function(searchEntry) {
         });
     };
 
+    // render up to 5 locations to the user
     let renderResults = function(data){
         // clear the search results
         clearSearch();
@@ -64,6 +69,7 @@ let getCities = function(searchEntry) {
             mapStartLat = locale.dataset.lat;
             mapStartLong = locale.dataset.long;
             clearSearch();
+            chosenLocation = locale;
             getPubs(locale);
             });
         });
@@ -152,13 +158,18 @@ let getCities = function(searchEntry) {
 
     // code for map display
 let renderMap = function(data){
+    // remove old map if existing
+    document.getElementById('map').innerHTML = '';
+    map = undefined;
+
     mapboxgl.accessToken = apiKeyMap;
-    const map = new mapboxgl.Map({
-    container: 'map', // container ID
-    style: 'mapbox://styles/mapbox/streets-v11', // style URL
-    center: [mapStartLong, mapStartLat], // starting position [lng, lat]
-    zoom: 13 // starting zoom
+    map = new mapboxgl.Map({
+        container: 'map', // container ID
+        style: 'mapbox://styles/mapbox/streets-v11', // style URL
+        center: [mapStartLong, mapStartLat], // starting position [lng, lat]
+        zoom: 13 // starting zoom
     });
+    
     //adds controls to map
     map.addControl(new mapboxgl.NavigationControl());
 
@@ -166,15 +177,68 @@ let renderMap = function(data){
     for (i = 0; i < data.features.length; i++) {
         let lat = data.features[i].geometry.coordinates[1];
         let long = data.features[i].geometry.coordinates[0];
+        // add data for creating <li> elements as a data attribute
         let listEL = `<li class="brewery-list" data-lat="${data.features[i].geometry.coordinates[1]}" data-long="${data.features[i].geometry.coordinates[0]}" data-id="${data.features[i].properties.place_id}"><span class="brewery-name">${data.features[i].properties.name}</span><br/><span class="brewery-address">${data.features[i].properties.street}</span></li>`;
+        // create element to be added to DOM for marker pop up upon click
         let div = window.document.createElement('div');
-        div.dataset.listEl = listEL;
-        div.innerHTML = `<strong>${data.features[i].properties.name}</strong><br/><button class="add-route-btn" onclick="saveToRoute()">Add to Route</button>`;
-        new mapboxgl.Marker()
-        .setLngLat([long, lat])
-        .setPopup(new mapboxgl.Popup({className: 'popup'}).setDOMContent(div))
-        .addTo(map);
+            div.dataset.listEl = listEL;
+            div.innerHTML = `<strong>${data.features[i].properties.name}</strong><br/><button class="add-route-btn" onclick="saveToRoute()">Add to Route</button>`;
+        // create markers, set popups
+            marker = new mapboxgl.Marker({ 'color': '#000000'})
+                .setLngLat([long, lat])
+                .setPopup(new mapboxgl.Popup({className: 'popup'}).setDOMContent(div))
+                .addTo(map);
+        addEventButton();
     };
+
+    map.on('load', function(){
+        // creating source that will hold route data once passed
+        map.addSource('route', {
+            type: 'geojson',
+            data: nothing
+          });
+          // adding layer to map to render route line
+        map.addLayer(
+        {
+            id: 'routeline',
+            type: 'line',
+            source: 'route',
+            layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+            },
+            paint: {
+            'line-color': '#3887be',
+            'line-width': ['interpolate', ['linear'], ['zoom'], 12, 3, 22, 12]
+            }
+        },
+        'waterway-label'
+        );
+        // adding directional arrows to route line
+        map.addLayer(
+            {
+              id: 'routearrows',
+              type: 'symbol',
+              source: 'route',
+              layout: {
+                'symbol-placement': 'line',
+                'text-field': '▶',
+                'text-size': ['interpolate', ['linear'], ['zoom'], 12, 24, 22, 60],
+                'symbol-spacing': ['interpolate', ['linear'], ['zoom'], 12, 30, 22, 160],
+                'text-keep-upright': false
+              },
+              paint: {
+                'text-color': '#3887be',
+                'text-halo-color': 'hsl(55, 11%, 96%)',
+                'text-halo-width': 3
+              }
+            },
+        );
+        for (i=0; i<map._markers.length; i++){
+            map._markers[i]._element.dataset.marker = i;
+            map._markers[i]._popup._content.children[0].children[2].dataset.marker = i;
+        };
+    });
 };
 
 // function called by clicking button within map
@@ -185,37 +249,69 @@ let saveToRoute = function () {
     ul.insertAdjacentHTML('beforeend', li);
 };
 
-document.getElementById('create-route').addEventListener('click', function(event){
-    event.preventDefault();
-    createRoute();
-});
+let addEventButton = function(){
+for(i=0; i<map._markers.length; i++){
+    let button = map._markers[i]._popup._content.children[0].children[2];
+    button.addEventListener('click', function(event){
+        let markerId = event.path[0].dataset.marker;
+        let marker = document.querySelector(`[data-marker='${markerId}']`);
+        console.log(marker);
+        marker.children[0].children[0].children[1].attributes[0].nodeValue = '#3FB1CE';
+    }
+)};
+};
 
+// adds the route to the map. Starting point is always the first pub, the rest of the route is optimized regarless of selection order
 let createRoute = function () {
     let profile = 'mapbox/walking';
     let coordinates = '';
-    let routeList = document.querySelector('.route-list');
         for (i=0; i < routeList.children.length; i++) {
             coordinates += `${routeList.children[i].dataset.long},${routeList.children[i].dataset.lat};`;
         };
         // remove the ; from the end of the coordinates string
         slicedCoords = coordinates.slice(0, -1);
-    let apiUrl = `https://api.mapbox.com/optimized-trips/v1/${profile}/${slicedCoords}?access_token=${apiKeyMap}`;
-    console.log(apiUrl);
-    // fetch(apiUrl)
-    // .then(function(response){
-    //     if (!response.ok) {
-    //         // need to change alert for something else
-    //         alert('Error: ' + response.statusText);
-    //         } 
-    //     return response.json();    
-    // })
-    // .then(function (data){
-    //     console.log(data);
-    //     })
-    // .catch(function (error) {
-    //     // need to change alert for something else
-    //     console.log(error);
-    //     alert('Unable to connect');
-    // });
+    let apiUrl = `https://api.mapbox.com/optimized-trips/v1/${profile}/${slicedCoords}?geometries=geojson&overview=full&roundtrip=true&source=any&destination=any&access_token=${apiKeyMap}`;
+    // console.log(apiUrl);
+    fetch(apiUrl)
+    .then(function(response){
+        if (!response.ok) {
+            // need to change alert for something else
+            alert('Error: ' + response.statusText);
+            } 
+        return response.json();    
+    })
+    .then(function (data){
+        console.log(data);
+        let routeGeoJSON = turf.featureCollection([
+            turf.feature(data.trips[0].geometry)
+        ]);
+        map.getSource('route').setData(routeGeoJSON);
+        })
+    .catch(function (error) {
+        // need to change alert for something else
+        console.log(error);
+        alert('Unable to connect');
+    });
 
 };
+
+
+// event listener for create route button
+document.getElementById('create-route').addEventListener('click', function(event){
+    event.preventDefault();
+    createRoute();
+});
+
+
+// event listener for create route button
+document.getElementById('clear-route').addEventListener('click', function(event){
+    event.preventDefault();
+    getPubs(chosenLocation);
+    routeList.innerHTML = '';
+});
+
+// event listener for save route button
+document.getElementById('save-route').addEventListener('click', function(event){
+    event.preventDefault();
+    console.log(event);
+});

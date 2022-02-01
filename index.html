@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@300&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
     <!-- MapBox stylesheet` -->
-    <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
     <title>Pub Crawler</title>
 </head>
 <body>
@@ -66,6 +66,8 @@
                 <!-- Selected pubs on route will go here -->
             </ul>
             <button id='create-route'>Create Route</button>
+            <button id='clear-route'>Clear Route</button>
+            <button id='save-route'>Save Route</button>
         </section>
 
     </div>
@@ -75,7 +77,8 @@
 
     </footer>
     <!-- Mapbox API script` -->
-    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
     <script src="./assets/js/script.js"></script>
 </body>
 </html>

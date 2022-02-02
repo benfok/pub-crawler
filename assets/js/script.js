@@ -67,8 +67,6 @@ let getCities = function(searchEntry) {
     
         locales.forEach(function(locale){
             locale.addEventListener('click', function(){
-            mapStartLat = locale.dataset.lat;
-            mapStartLong = locale.dataset.long;
             clearSearch();
             chosenLocation = locale;
             getPubs(locale);
@@ -79,12 +77,12 @@ let getCities = function(searchEntry) {
     // return closest breweries to location selected - 20 results by default
     let getPubs = function(locale){
         let apiKey = 'ec770931d96f478da03865c1cf963f8b';
-        let lat = locale.dataset.lat;
-        let long = locale.dataset.long;
+        mapStartLat = locale.dataset.lat;
+        mapStartLong = locale.dataset.long;
         let types = 'catering.pub,catering.bar,catering.biergarten';
         let limit = 25;
         let radius = 5000;
-        let apiUrl = `https://api.geoapify.com/v2/places?categories=${types}&filter=circle:${long},${lat},${radius}&bias=proximity:${long},${lat}&limit=${limit}&apiKey=${apiKey}`;
+        let apiUrl = `https://api.geoapify.com/v2/places?categories=${types}&filter=circle:${mapStartLong},${mapStartLat},${radius}&bias=proximity:${mapStartLong},${mapStartLat}&limit=${limit}&apiKey=${apiKey}`;
         // console.log(apiUrl);   
         fetch(apiUrl)
             .then(function(response){
@@ -359,13 +357,17 @@ let renderSavedList = function(){
     savedRoutesListItems.forEach(function(route){
         route.addEventListener('click', function(){
         console.log(route);
-        // restoreRoute(route);
+        console.dir(route);
+        restoreRoute(route);
         });
     });
 };
 
-let restoreRoute = function(){
-
+let restoreRoute = function(route){
+    let parser = new DOMParser();
+    let data = parser.parseFromString(route.dataset.location, 'text/html');
+    let location = data.children[0].children[1].children[0];
+    getPubs(location);
 };
 
 // get search history upon page load

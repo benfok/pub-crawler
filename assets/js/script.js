@@ -1,14 +1,15 @@
 let searchEntry = document.getElementById('city-search-input');
 let searchResults = document.getElementById('cities-list');
 let routeList = document.querySelector('.route-list');
-// let chosenPub;
+// let chosenPub; - may not need this
 let chosenLocation;
 let mapStartLat; 
 let mapStartLong;
 let marker;
 let map;
-let nothing = turf.featureCollection([]);
+let source = turf.featureCollection([]);
 let apiKeyMap = 'pk.eyJ1IjoiYmVuZm9rIiwiYSI6ImNrejBibzE4bDFhbzgyd213YXE3Ynp1MjAifQ.fbuWSwdUyN9SNuaJS_KLnw';
+let markerCounter = 0;
 
 // function API call to return 5 search results for location entered
 let getCities = function(searchEntry) {
@@ -110,7 +111,7 @@ let getCities = function(searchEntry) {
                 return response.json();    
             })
             .then(function (data){
-                console.log(data);
+                // console.log(data);
                 showPubs(data);
                 renderMap(data);
                 })
@@ -195,7 +196,7 @@ let renderMap = function(data){
         // creating source that will hold route data once passed
         map.addSource('route', {
             type: 'geojson',
-            data: nothing
+            data: source
           });
           // adding layer to map to render route line
         map.addLayer(
@@ -243,22 +244,29 @@ let renderMap = function(data){
 
 // function called by clicking button within map
 let saveToRoute = function () {
-    let button = document.querySelector('.add-route-btn');
-    let ul = document.getElementById('route-ul');
-    let li = button.parentElement.dataset.listEl;
-    ul.insertAdjacentHTML('beforeend', li);
+    if (markerCounter < 10) {
+        let button = document.querySelector('.add-route-btn');
+        let ul = document.getElementById('route-ul');
+        let li = button.parentElement.dataset.listEl;
+        ul.insertAdjacentHTML('beforeend', li);
+        markerCounter++;
+    } else {
+        alert('A maximum of 10 pubs are permitted per route. It is important to drink responsibly.');
+    }
 };
 
 let addEventButton = function(){
-for(i=0; i<map._markers.length; i++){
-    let button = map._markers[i]._popup._content.children[0].children[2];
-    button.addEventListener('click', function(event){
-        let markerId = event.path[0].dataset.marker;
-        let marker = document.querySelector(`[data-marker='${markerId}']`);
-        console.log(marker);
-        marker.children[0].children[0].children[1].attributes[0].nodeValue = '#3FB1CE';
-    }
-)};
+    if (markerCounter < 10){
+        for(i=0; i<map._markers.length; i++){
+            let button = map._markers[i]._popup._content.children[0].children[2];
+            button.addEventListener('click', function(event){
+                let markerId = event.path[0].dataset.marker;
+                let marker = document.querySelector(`[data-marker='${markerId}']`);
+                // console.log(marker);
+                marker.children[0].children[0].children[1].attributes[0].nodeValue = '#3FB1CE';
+            });
+        };       
+    };
 };
 
 // adds the route to the map. Starting point is always the first pub, the rest of the route is optimized regarless of selection order
@@ -281,7 +289,7 @@ let createRoute = function () {
         return response.json();    
     })
     .then(function (data){
-        console.log(data);
+        // console.log(data);
         let routeGeoJSON = turf.featureCollection([
             turf.feature(data.trips[0].geometry)
         ]);
@@ -303,15 +311,27 @@ document.getElementById('create-route').addEventListener('click', function(event
 });
 
 
-// event listener for create route button
+// event listener for clear route button
 document.getElementById('clear-route').addEventListener('click', function(event){
     event.preventDefault();
     getPubs(chosenLocation);
     routeList.innerHTML = '';
+    markerCounter = 0;
 });
 
 // event listener for save route button
 document.getElementById('save-route').addEventListener('click', function(event){
     event.preventDefault();
-    console.log(event);
+    let routeName = document.getElementById('save').value;
+    // make sure a route name is entered
+    if (!routeName) {
+        alert('Enter a name');
+    }
+    // save route to local storage
+    let savedRoute = [];
+    savedRoute.push(routeName);
+    savedRoute.push(chosenLocation.outerHTML);
+    savedRoute.push(routeList.innerHTML);
+    localStorage.setItem('PubCrawler-SavedRoutes', JSON.stringify(savedRoute));
+    console.log(savedRoute);
 });

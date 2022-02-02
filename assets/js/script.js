@@ -4,12 +4,13 @@ let routeList = document.querySelector('.route-list');
 let chosenLocation;
 let mapStartLat; 
 let mapStartLong;
-let marker;
-let map;
+// let marker;
+let map = undefined;
 let source = turf.featureCollection([]);
 let apiKeyMap = 'pk.eyJ1IjoiYmVuZm9rIiwiYSI6ImNrejBibzE4bDFhbzgyd213YXE3Ynp1MjAifQ.fbuWSwdUyN9SNuaJS_KLnw';
 let markerCounter = 0;
 let savedRoutes = [];
+let mapReady = false;
 
 // function API call to return 5 search results for location entered
 let getCities = function(searchEntry) {
@@ -61,6 +62,17 @@ let getCities = function(searchEntry) {
     searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>';        
     };
 
+    
+    let renderMap = function (){
+        if (!chosenLocation) {
+            return;
+        }
+        routeList.innerHTML = '';
+        markerCounter = 0;
+        mapReady = false;
+        getPubs()
+    };
+
     // when location is selected, run get breweries API
     let localeSelect = function(){
         let locales = document.querySelectorAll('.locations')
@@ -69,16 +81,16 @@ let getCities = function(searchEntry) {
             locale.addEventListener('click', function(){
             clearSearch();
             chosenLocation = locale;
-            getPubs(locale);
+            renderMap();
             });
         });
     };
 
     // return closest breweries to location selected - 20 results by default
-    let getPubs = function(locale){
+    let getPubs = function(){
         let apiKey = 'ec770931d96f478da03865c1cf963f8b';
-        mapStartLat = locale.dataset.lat;
-        mapStartLong = locale.dataset.long;
+        mapStartLat = chosenLocation.dataset.lat;
+        mapStartLong = chosenLocation.dataset.long;
         let types = 'catering.pub,catering.bar,catering.biergarten';
         let limit = 25;
         let radius = 5000;
@@ -94,8 +106,7 @@ let getCities = function(searchEntry) {
             })
             .then(function (data){
                 // console.log(data);
-                showPubs(data);
-                renderMap(data);
+                loadMap(data);
                 })
             .catch(function (error) {
                 // need to change alert for something else
@@ -103,29 +114,6 @@ let getCities = function(searchEntry) {
                 alert('Unable to connect');
             });
         };
-
-    // render the breweries to the page ordered by distance (default ascending)
-    let showPubs = function(data){
-        let pubResults = document.getElementById('local-results-list');
-        // clear the search results
-        pubResults.innerHTML = '';
-        // if no results returned display a message
-        let str = '';
-        if (data.features.length === 0) {
-            let listEl = `<li class="brewery-list">No Results - Please Select A Different Location</li>`;
-            str += listEl;
-        // if results are displayed render them to the page and include the lat and long data to pass into the weather API call
-        } else {
-            for (i=0; i < data.features.length; i++) {
-                let listEL = `<li class="brewery-list" data-lat="${data.features[i].geometry.coordinates[1]}" data-long="${data.features[i].geometry.coordinates[0]}" data-id="${data.features[i].properties.place_id}"><span class="brewery-name">${data.features[i].properties.name}</span><br/><span class="brewery-address">${data.features[i].properties.street}</span></li>`;
-                str += listEL;
-            };
-        }
-        // add breweries as a list
-        pubResults.innerHTML += str;
-        // need to add function to activate event listeners on the newly created <li>s for mapping
-        // mapPub();
-    };
 
     // event listener for the search button
     document.getElementById('search-btn').addEventListener('click', function(event){
@@ -140,10 +128,12 @@ let getCities = function(searchEntry) {
     });
 
     // code for map display
-let renderMap = function(data){
+let loadMap = function(data){
     // remove old map if existing
-    document.getElementById('map').innerHTML = '';
-    map = undefined;
+    if(map !== undefined) {
+        document.getElementById('map').innerHTML = '';
+        map = undefined;
+    }
 
     mapboxgl.accessToken = apiKeyMap;
     map = new mapboxgl.Map({
@@ -160,14 +150,14 @@ let renderMap = function(data){
     for (i = 0; i < data.features.length; i++) {
         let lat = data.features[i].geometry.coordinates[1];
         let long = data.features[i].geometry.coordinates[0];
-        // add data for creating <li> elements as a data attribute
+        // add data for creating <li> elements as a data attribute for the marker popup
         let listEL = `<li class="brewery-list" data-lat="${data.features[i].geometry.coordinates[1]}" data-long="${data.features[i].geometry.coordinates[0]}" data-id="${data.features[i].properties.place_id}"><span class="brewery-name">${data.features[i].properties.name}</span><br/><span class="brewery-address">${data.features[i].properties.street}</span></li>`;
         // create element to be added to DOM for marker pop up upon click
         let div = window.document.createElement('div');
             div.dataset.listEl = listEL;
             div.innerHTML = `<strong>${data.features[i].properties.name}</strong><br/><button class="add-route-btn" onclick="saveToRoute()">Add to Route</button>`;
         // create markers, set popups
-            marker = new mapboxgl.Marker({ 'color': '#000000'})
+            let marker = new mapboxgl.Marker({ 'color': '#000000'})
                 .setLngLat([long, lat])
                 .setPopup(new mapboxgl.Popup({className: 'popup'}).setDOMContent(div))
                 .addTo(map);
@@ -221,6 +211,7 @@ let renderMap = function(data){
             map._markers[i]._element.dataset.marker = i;
             map._markers[i]._popup._content.children[0].children[2].dataset.marker = i;
         };
+        mapReady = true;
     });
 };
 
@@ -231,7 +222,9 @@ let saveToRoute = function () {
         let ul = document.getElementById('route-ul');
         let li = button.parentElement.dataset.listEl;
         ul.insertAdjacentHTML('beforeend', li);
+        // console.log(routeList);
         markerCounter++;
+        // console.log(markerCounter);
     } else {
         alert('A maximum of 10 pubs are permitted per route. It is important to drink responsibly.');
     }
@@ -253,6 +246,9 @@ let addEventButton = function(){
 
 // adds the route to the map. Starting point is always the first pub, the rest of the route is optimized regarless of selection order
 let createRoute = function () {
+    if (markerCounter < 2) {
+        return;
+    }
     let profile = 'mapbox/walking';
     let coordinates = '';
         for (i=0; i < routeList.children.length; i++) {
@@ -261,7 +257,11 @@ let createRoute = function () {
         // remove the ; from the end of the coordinates string
         slicedCoords = coordinates.slice(0, -1);
     let apiUrl = `https://api.mapbox.com/optimized-trips/v1/${profile}/${slicedCoords}?geometries=geojson&overview=full&roundtrip=true&source=any&destination=any&access_token=${apiKeyMap}`;
-    // console.log(apiUrl);
+    runRouteApi(apiUrl);
+};
+
+// runs the MapBox Route Optimization API
+let runRouteApi = function (apiUrl) {
     fetch(apiUrl)
     .then(function(response){
         if (!response.ok) {
@@ -296,31 +296,15 @@ document.getElementById('create-route').addEventListener('click', function(event
 // event listener for clear route button
 document.getElementById('clear-route').addEventListener('click', function(event){
     event.preventDefault();
-    getPubs(chosenLocation);
-    routeList.innerHTML = '';
-    markerCounter = 0;
+    renderMap();
 });
 
-// event listener for save route button
-document.getElementById('save-route').addEventListener('click', function(event){
-    event.preventDefault();
-    let routeName = document.getElementById('save').value;
-    // make sure a route name is entered
-    if (!routeName) {
-        alert('Enter a name');
-    }
-    // ready saved route for storage
-    let savedRoute = [];
-    savedRoute.push(routeName);
-    savedRoute.push(chosenLocation.outerHTML);
-    savedRoute.push(routeList.innerHTML);
-    savedRoutes.unshift(savedRoute);
-    localStorage.setItem('PubCrawler-SavedRoutes', JSON.stringify(savedRoutes));
-    console.log(savedRoutes);
-    renderSavedList();
+// get search history upon page load
+window.addEventListener('load', function() {
+    getSavedRoutes();
 });
 
-// get saved items
+//  get saved items
 let getSavedRoutes = function(){
     // check that localStorage exists and if not show message to user within Search History section
     if (!localStorage.getItem('PubCrawler-SavedRoutes')) {
@@ -330,47 +314,79 @@ let getSavedRoutes = function(){
     // retrieve and parse data into savedRoutes array
     let data = localStorage.getItem('PubCrawler-SavedRoutes');
     savedRoutes = JSON.parse(data);
-    // console.log(savedRoutes);
     // render search history
-    renderSavedList();
+    renderSavedList(savedRoutes);
 };
 
 // render saved route list from local storage
-let renderSavedList = function(){
+let renderSavedList = function(routes){
     // located the ul element and clear it
     let ul = document.getElementById('saved-routes');
     ul.innerHTML = '';
     // loop through the saved routes array and create li items that store the needed information to restore the route
-    for(i=0; i < savedRoutes.length; i++){
+    for(i=0; i < routes.length; i++){
         let li = document.createElement('li');
-        li.textContent = savedRoutes[i][0];
+        li.textContent = routes[i].name;
         li.className = 'saved-list';
-        li.dataset.location = savedRoutes[i][1];
-        li.dataset.route = savedRoutes[i][2];
+        li.dataset.location = routes[i].location;
+        li.dataset.route = routes[i].route;
         // render li items to the list
         ul.insertAdjacentElement('beforeend', li);
     }
     // console.log(ul.innerHTML);
     // activate event listeners on the items and run restore route function if clicked
     let savedRoutesListItems = document.querySelectorAll('.saved-list');
-
     savedRoutesListItems.forEach(function(route){
         route.addEventListener('click', function(){
-        console.log(route);
-        console.dir(route);
         restoreRoute(route);
         });
     });
 };
 
+// event listener for save route button
+document.getElementById('save-route').addEventListener('click', function(event){
+    event.preventDefault();
+    let routeName = document.getElementById('save').value;
+    // make sure a route name is entered
+    if (!routeName) {
+        alert('Enter a name');
+        return;
+    }
+    // ready saved route for storage
+    let item = {
+        name: routeName,
+        location: chosenLocation.outerHTML,
+        route: routeList.innerHTML
+    };
+    savedRoutes.push(item);
+    // add to storage
+    localStorage.setItem('PubCrawler-SavedRoutes', JSON.stringify(savedRoutes));
+    renderSavedList(savedRoutes);
+});
+
 let restoreRoute = function(route){
     let parser = new DOMParser();
-    let data = parser.parseFromString(route.dataset.location, 'text/html');
-    let location = data.children[0].children[1].children[0];
-    getPubs(location);
+    let locData = parser.parseFromString(route.dataset.location, 'text/html');
+    chosenLocation = locData.children[0].children[1].children[0];
+    renderMap();
+    let routeData = route.dataset.route;
+    routeList.innerHTML = routeData;
+    markerCounter = routeList.children.length;
+    // the rendering of the saved route requires the map to be ready and loaded. As this can take > 1 second, the setTimeout function ensure that this code waits 2 seconds before initially running, and checks if the map is ready before executing. The function reruns every second after the first try. As this function would just continue to loop, if the fail count reaches 10 it will stop.
+    let failCount = 0;
+    let recreateRoute = function (){
+        if (failCount > 10) {
+            alert('Unable to load saved route');
+            return; 
+        } else if (!mapReady) {
+                failCount++
+                setTimeout(function(){
+                recreateRoute();
+            }, 1000);
+        } else {createRoute();}
+    };
+    setTimeout(function(){
+        recreateRoute();
+    }, 2000);
 };
 
-// get search history upon page load
-window.addEventListener('load', function() {
-    getSavedRoutes();
-});

@@ -8,6 +8,7 @@ body {
     background-color: var(--yellow);
 }
 
+/* Header */
 header {
     background-image: url("../images/header-img.JPG");
     background-size: 100vw;
@@ -29,6 +30,7 @@ h1 {
     font-size: 5em;
 }
 
+/* Main area structure */
 main {
     display: flex;
     flex-direction: row;
@@ -38,22 +40,31 @@ main {
 }
 
 .column {
-    width: 48%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 1.5%;
+}
+
+#first-column {
+    width: 30%;
+}
+
+#second-column {
+    width: 65%;
 }
 
 section {
     border: solid var(--black) 8px;
     width: 100%;
-    margin-top: 2%;
 }
 
+/* Search box */
 #search-area {
     background-color: var(--black);
     color: var(--yellow);
     padding: 3%;
+    margin-bottom: 2%;
 }
 
 #search-form {
@@ -72,7 +83,7 @@ section {
     width: 75%;
 }
 
-#search-btn {
+.btn {
     background-color: var(--yellow);
     color: var(--black);
     padding: 1.5%;
@@ -82,9 +93,18 @@ section {
     transition: all 400ms linear;
 }
 
-#search-btn:hover {
+.btn:hover {
     cursor: pointer;
     background-color: var(--white);
+}
+
+/* List of restaurants */
+#local-results-area {
+    display: none;
+}
+
+.route-list {
+    width: 100%;
 }
 
 .city-option {
@@ -96,6 +116,7 @@ section {
     transition: all 400ms linear; 
     border-radius: 35px;
     text-align: center;
+    width: 95%;
 }
 
 .city-option:hover {
@@ -114,6 +135,40 @@ section {
 
 .results-header {
     font-size: 1.5em;
+    margin-bottom: 3%;
+}
+
+#route-control-area {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    background-color: var(--black);
+    color: var(--yellow);
+    padding-bottom: 3%;
+}
+
+#route-form {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 2%;
+    width: 25%;
+}
+
+#route-name-label {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#save {
+    border: solid var(--black) 2px;
+    width: 100%;
+    margin-top: 2%;
 }
 
 .brewery-list {
@@ -129,6 +184,8 @@ section {
 .brewery-name {
     transition: all 400ms linear;
     color: var(--yellow);
+    font-size: 1.3em;
+    font-weight: bold;
 }
 
 .brewery-list:hover {
@@ -139,12 +196,7 @@ section {
     color: var(--white);
 }
 
-.brewery-name {
-    font-size: 1.3em;
-    font-weight: bold;
-    /* color: var(--yellow); */
-}
-
+/* Map */
 #map-area {
     background-color: var(--white);
     text-align: center;
@@ -152,7 +204,7 @@ section {
 
 #map { 
     width: 100%;
-    height: 400px;
+    height: 500px;
 }
 
 .add-route-btn {
@@ -175,11 +227,19 @@ section {
         align-items: center;
     }
 
-    .column {
-        width: 95%;
-    }
-
     #city-search-input {
         width: 70%;
+    }
+
+    .column {
+        width: 95% !important;
+    }
+
+    #route-form {
+        width: 70%;
+    }
+
+    #route-control-area {
+        justify-content: center;
     }
 }

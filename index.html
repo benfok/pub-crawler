@@ -28,11 +28,11 @@
             <form id="search-form">
                 <label for="city-search-input" id="search-label">Enter City Below</label>
                 <input type="text" name="city-search-input"id="city-search-input" placeholder="Let's find a brewery!">
-                <input type="submit" id="search-btn" value="Cheers!"></input>
+                <input class="btn" type="submit" id="search-btn" value="Cheers!"></input>
             </form>
             <div id="choose-cities-area">
                 <ul class="cities-list" id="cities-list">
-                    <li class="city-option my-location" id="current-location-option">Use My Current location</li>
+                    <li class="city-option my-location" id="current-location-option">Use My Current Location</li>
                 </ul>
             </div>
         </section>
@@ -44,35 +44,40 @@
                 <!-- Local results will go here -->
             </ul>
         </section>
-
-    </div>  
-    
-    <!-- Right column (in desktop view) -->
-    <div class = "column" id="second-column">
-
-        <!-- Placeholder for where the map will go -->
-        <section id="map-area">
-            <div id="map"></div>
-            <!-- <img src="assets/images/maps-placeholder.png"> -->
-        </section>
-
-        <!-- Saved favorite pubs -->
+        
+        <!-- List of selected bars -->
         <section class="results-area" id="favorite-results-area">
-            <h2 class="results-header" id="favorite-results-header">My Favorites</h2>
+            <h2 class="results-header" id="favorite-results-header">Current Route</h2>
             <ul class="results-list" id="favorite-results-list">
                 <!-- Favorites will go here -->
             </ul>
                 <!-- Selected pubs on route will go in the following ul -->
             <ul class="route-list" id="route-ul"></ul>
-            <button id='create-route'>Create Route</button>
-            <button id='clear-route'>Clear Route</button>
-            <form>
-                <label for="save">Route Name</label>
-                <input type="text" name="save" id="save">
-                <input type="submit" id="save-route" value="Save Route">
-            </form>
-            <ul class="saved-routes" id="saved-routes"></ul>
         </section>
+    </div>  
+    
+    <!-- Right column (in desktop view) -->
+    <div class = "column" id="second-column">
+        
+        <!-- Placeholder for where the map will go -->
+        <section id="map-area">
+            <div id="map"></div>
+            <!-- <img src="assets/images/maps-placeholder.png"> -->
+        </section>
+        
+        <!-- Control panel for creating/saving/clearing routes -->
+        <div id="route-control-area">
+            <button class="btn" id="create-route">Create Route</button>
+            <button class="btn" id="clear-route">Clear Route</button>
+            <form id="route-form">
+                <label id="route-name-label" for="save">Route Name</label>
+                <input type="text" name="save" id="save">
+            </form>
+            <input class="btn" type="submit" id="save-route" value="Save Route">
+            <ul class="saved-routes" id="saved-routes"></ul>
+    
+        </div>
+        
 
     </div>
 

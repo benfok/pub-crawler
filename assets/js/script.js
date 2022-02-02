@@ -1,7 +1,6 @@
 let searchEntry = document.getElementById('city-search-input');
 let searchResults = document.getElementById('cities-list');
 let routeList = document.querySelector('.route-list');
-// let chosenPub; - may not need this
 let chosenLocation;
 let mapStartLat; 
 let mapStartLong;
@@ -10,6 +9,7 @@ let map;
 let source = turf.featureCollection([]);
 let apiKeyMap = 'pk.eyJ1IjoiYmVuZm9rIiwiYSI6ImNrejBibzE4bDFhbzgyd213YXE3Ynp1MjAifQ.fbuWSwdUyN9SNuaJS_KLnw';
 let markerCounter = 0;
+let savedRoutes = [];
 
 // function API call to return 5 search results for location entered
 let getCities = function(searchEntry) {
@@ -76,22 +76,6 @@ let getCities = function(searchEntry) {
         });
     };
 
-
-
-    // map pub on click - possibly redundant code
-    // let mapPub = function(){
-    //     let clickedBrewery = document.querySelectorAll('.brewery-list');
-    //     clickedBrewery.forEach(function(brewery){
-    //         brewery.addEventListener('click', function(){
-    //         chosenPub = brewery;
-    //         console.dir(chosenPub);
-    //         mapStartLat = brewery.dataset.lat;
-    //         mapStartLong = brewery.dataset.long;
-    //         renderMap();
-    //         });
-    //     });
-    // };
-
     // return closest breweries to location selected - 20 results by default
     let getPubs = function(locale){
         let apiKey = 'ec770931d96f478da03865c1cf963f8b';
@@ -124,9 +108,9 @@ let getCities = function(searchEntry) {
 
     // render the breweries to the page ordered by distance (default ascending)
     let showPubs = function(data){
-        let searchResults = document.getElementById('local-results-list');
+        let pubResults = document.getElementById('local-results-list');
         // clear the search results
-        searchResults.innerHTML = '';
+        pubResults.innerHTML = '';
         // if no results returned display a message
         let str = '';
         if (data.features.length === 0) {
@@ -140,7 +124,7 @@ let getCities = function(searchEntry) {
             };
         }
         // add breweries as a list
-        searchResults.innerHTML += str;
+        pubResults.innerHTML += str;
         // need to add function to activate event listeners on the newly created <li>s for mapping
         // mapPub();
     };
@@ -327,11 +311,64 @@ document.getElementById('save-route').addEventListener('click', function(event){
     if (!routeName) {
         alert('Enter a name');
     }
-    // save route to local storage
+    // ready saved route for storage
     let savedRoute = [];
     savedRoute.push(routeName);
     savedRoute.push(chosenLocation.outerHTML);
     savedRoute.push(routeList.innerHTML);
-    localStorage.setItem('PubCrawler-SavedRoutes', JSON.stringify(savedRoute));
-    console.log(savedRoute);
+    savedRoutes.unshift(savedRoute);
+    localStorage.setItem('PubCrawler-SavedRoutes', JSON.stringify(savedRoutes));
+    console.log(savedRoutes);
+    renderSavedList();
+});
+
+// get saved items
+let getSavedRoutes = function(){
+    // check that localStorage exists and if not show message to user within Search History section
+    if (!localStorage.getItem('PubCrawler-SavedRoutes')) {
+        document.getElementById('saved-routes').innerHTML = `<li class="saved-list">No Saved Data</li>`;
+        return;
+    }
+    // retrieve and parse data into savedRoutes array
+    let data = localStorage.getItem('PubCrawler-SavedRoutes');
+    savedRoutes = JSON.parse(data);
+    // console.log(savedRoutes);
+    // render search history
+    renderSavedList();
+};
+
+// render saved route list from local storage
+let renderSavedList = function(){
+    // located the ul element and clear it
+    let ul = document.getElementById('saved-routes');
+    ul.innerHTML = '';
+    // loop through the saved routes array and create li items that store the needed information to restore the route
+    for(i=0; i < savedRoutes.length; i++){
+        let li = document.createElement('li');
+        li.textContent = savedRoutes[i][0];
+        li.className = 'saved-list';
+        li.dataset.location = savedRoutes[i][1];
+        li.dataset.route = savedRoutes[i][2];
+        // render li items to the list
+        ul.insertAdjacentElement('beforeend', li);
+    }
+    // console.log(ul.innerHTML);
+    // activate event listeners on the items and run restore route function if clicked
+    let savedRoutesListItems = document.querySelectorAll('.saved-list');
+
+    savedRoutesListItems.forEach(function(route){
+        route.addEventListener('click', function(){
+        console.log(route);
+        // restoreRoute(route);
+        });
+    });
+};
+
+let restoreRoute = function(){
+
+};
+
+// get search history upon page load
+window.addEventListener('load', function() {
+    getSavedRoutes();
 });

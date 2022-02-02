@@ -62,12 +62,16 @@
             <ul class="results-list" id="favorite-results-list">
                 <!-- Favorites will go here -->
             </ul>
-            <ul class="route-list" id="route-ul">
-                <!-- Selected pubs on route will go here -->
-            </ul>
+                <!-- Selected pubs on route will go in the following ul -->
+            <ul class="route-list" id="route-ul"></ul>
             <button id='create-route'>Create Route</button>
             <button id='clear-route'>Clear Route</button>
-            <button id='save-route'>Save Route</button>
+            <form>
+                <label for="save">Route Name</label>
+                <input type="text" name="save" id="save">
+                <input type="submit" id="save-route" value="Save Route">
+            </form>
+            <ul class="saved-routes" id="saved-routes"></ul>
         </section>
 
     </div>

@@ -47,6 +47,9 @@ let getCities = function(searchEntry) {
         // if results are displayed render them to the page and include the lat and long data to pass into the location API call
         } else {
             for (i=0; i < data.length; i++) {
+                if (data[i].state == undefined) {
+                data[i].state = '';
+                }
                 let listEL = `<li class="city-option locations" data-lat="${data[i].lat}" data-long="${data[i].lon}">${data[i].name}, ${data[i].state} (${data[i].country})</li>`;
                 str += listEL;
             };
@@ -57,23 +60,7 @@ let getCities = function(searchEntry) {
         localeSelect();
     };
 
-    // clear search results after selection
-    let clearSearch = function(){
-    searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>';        
-    };
-
-    
-    let renderMap = function (){
-        if (!chosenLocation) {
-            return;
-        }
-        routeList.innerHTML = '';
-        markerCounter = 0;
-        mapReady = false;
-        getPubs()
-    };
-
-    // when location is selected, run get breweries API
+    // accesses newly created city/neighborhood search results, adds event listeners, sets the chosen location and renders the map
     let localeSelect = function(){
         let locales = document.querySelectorAll('.locations')
     
@@ -86,7 +73,48 @@ let getCities = function(searchEntry) {
         });
     };
 
-    // return closest breweries to location selected - 20 results by default
+    // clear search results after selection
+    let clearSearch = function(){
+    searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>';        
+    };
+
+    // load current location. Note that this creates a browser alert to the user to accept use of their current location
+    document.querySelector('.my-location').addEventListener('click', function(){
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+          };
+          
+          function success(loc) {
+            var crd = loc.coords;
+          
+            console.log('Your current position is:');
+            console.log(`Latitude : ${crd.latitude}`);
+            console.log(`Longitude: ${crd.longitude}`);
+            console.log(`More or less ${crd.accuracy} meters.`);
+          }
+          
+          function error(err) {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+          }
+          
+          navigator.geolocation.getCurrentPosition(success, error, options);
+    });
+
+    
+    // function that renders or resets the map. Called from search selection, clear route button or during the restoration of a saved route to reset variables
+    let renderMap = function (){
+        if (!chosenLocation) {
+            return;
+        }
+        routeList.innerHTML = '';
+        markerCounter = 0;
+        mapReady = false;
+        getPubs()
+    };
+
+    // return closest pubs to location selected. Limit is 25 results or a 5000 meter radius.
     let getPubs = function(){
         let apiKey = 'ec770931d96f478da03865c1cf963f8b';
         mapStartLat = chosenLocation.dataset.lat;

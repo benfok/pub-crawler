@@ -129,6 +129,12 @@ let getCities = function(searchEntry) {
 
     // code for map display
 let loadMap = function(data){
+    //Removes the instructions from layout
+    let instructions = document.querySelector('#instructions-area');
+    instructions.setAttribute('class', 'hidden');
+    //Replaces the instructions with the map
+    let theMap = document.querySelector('#map');
+    theMap.classList.remove('hidden');
     // remove old map if existing
     if(map !== undefined) {
         document.getElementById('map').innerHTML = '';
@@ -372,6 +378,11 @@ let restoreRoute = function(route){
     let routeData = route.dataset.route;
     routeList.innerHTML = routeData;
     markerCounter = routeList.children.length;
+    //Adds saved route name to title at top
+    let savedRouteName = document.querySelector('#route-title');
+    savedRouteName.textContent = route.textContent;
+    let mapHeader = document.querySelector('#map-header');
+    mapHeader.classList.remove('hidden');
     // the rendering of the saved route requires the map to be ready and loaded. As this can take > 1 second, the setTimeout function ensure that this code waits 2 seconds before initially running, and checks if the map is ready before executing. The function reruns every second after the first try. As this function would just continue to loop, if the fail count reaches 10 it will stop.
     let failCount = 0;
     let recreateRoute = function (){

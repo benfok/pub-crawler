@@ -88,18 +88,18 @@ let getCities = function(searchEntry) {
           
           function success(loc) {
             var crd = loc.coords;
-          
-            console.log('Your current position is:');
-            console.log(`Latitude : ${crd.latitude}`);
-            console.log(`Longitude: ${crd.longitude}`);
-            console.log(`More or less ${crd.accuracy} meters.`);
-          }
+            let listEl = `<li class="city-option my-location locations" data-lat="${crd.latitude}" data-long="${crd.longitude}">My Current Location</li>`;
+            searchResults.innerHTML = listEl;
+            chosenLocation = document.querySelector('.locations');
+            renderMap();
+          };
           
           function error(err) {
             console.warn(`ERROR(${err.code}): ${err.message}`);
-          }
+          };
           
           navigator.geolocation.getCurrentPosition(success, error, options);
+        
     });
 
     
@@ -158,11 +158,12 @@ let getCities = function(searchEntry) {
     // code for map display
 let loadMap = function(data){
     //Removes the instructions from layout
-    let instructions = document.querySelector('#instructions-area');
-    instructions.setAttribute('class', 'hidden');
-    //Replaces the instructions with the map
-    let theMap = document.querySelector('#map');
-    theMap.classList.remove('hidden');
+    document.querySelector('#instructions-area').setAttribute('class', 'hidden');
+    //Display map container
+    document.querySelector('#map').className = '';
+    //Displays map header
+    document.querySelector('#map-header').classList.remove('hidden');
+    document.querySelector('#map-header-text').textContent = chosenLocation.textContent;
     // remove old map if existing
     if(map !== undefined) {
         document.getElementById('map').innerHTML = '';
@@ -174,7 +175,7 @@ let loadMap = function(data){
         container: 'map', // container ID
         style: 'mapbox://styles/mapbox/streets-v11', // style URL
         center: [mapStartLong, mapStartLat], // starting position [lng, lat]
-        zoom: 14 // starting zoom
+        zoom: 13 // starting zoom
     });
     
     //adds controls to map
@@ -279,7 +280,7 @@ let createRoute = function () {
     if (markerCounter < 2) {
         return;
     }
-    let profile = 'mapbox/walking';
+    let profile = 'mapbox/cycling';
     let coordinates = '';
         for (i=0; i < routeList.children.length; i++) {
             coordinates += `${routeList.children[i].dataset.long},${routeList.children[i].dataset.lat};`;
@@ -301,7 +302,7 @@ let runRouteApi = function (apiUrl) {
         return response.json();    
     })
     .then(function (data){
-        // console.log(data);
+        storeRouteInfo(data);
         let routeGeoJSON = turf.featureCollection([
             turf.feature(data.trips[0].geometry)
         ]);
@@ -315,6 +316,9 @@ let runRouteApi = function (apiUrl) {
 
 };
 
+let storeRouteInfo = function (data){
+    console.log(data);
+};
 
 // event listener for create route button
 document.getElementById('create-route').addEventListener('click', function(event){
@@ -380,7 +384,7 @@ let markerColorRestore = function () {
     for (i = 1; i < routeList.children.length; i++){
         selectedPubIds.push(routeList.children[i].dataset.id);
     };
-    console.log(selectedPubIds);
+    // console.log(selectedPubIds);
     for (i = 0; i < map._markers.length; i++){
         let id = map._markers[i]._popup._content.children[0].dataset.id;
         if (selectedPubIds.includes(id)) {
@@ -422,11 +426,6 @@ let restoreRoute = function(route){
     let routeData = route.dataset.route;
     routeList.innerHTML = routeData;
     markerCounter = routeList.children.length;
-    //Adds saved route name to title at top
-    let savedRouteName = document.querySelector('#route-title');
-    savedRouteName.textContent = route.textContent;
-    let mapHeader = document.querySelector('#map-header');
-    mapHeader.classList.remove('hidden');
     // the rendering of the saved route requires the map to be ready and loaded. As this can take > 1 second, the setTimeout function ensure that this code waits 2 seconds before initially running, and checks if the map is ready before executing. The function reruns every second after the first try. As this function would just continue to loop, if the fail count reaches 10 it will stop.
     let failCount = 0;
     let recreateRoute = function (){
@@ -439,6 +438,8 @@ let restoreRoute = function(route){
                 recreateRoute();
             }, 1000);
         } else {
+            //Adds saved route name to title at top
+            document.querySelector('#map-header-text').textContent = route.textContent
             createRoute();
             markerColorRestore();
         }

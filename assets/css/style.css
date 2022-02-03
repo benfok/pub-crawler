@@ -98,11 +98,6 @@ section {
     background-color: var(--white);
 }
 
-/* List of restaurants */
-#local-results-area, .hidden {
-    display: none;
-}
-
 .route-list, .saved-list {
     width: 100%;
 }
@@ -256,7 +251,10 @@ section {
     padding: 2%;
 }
 
-
+/* hidden class*/
+.hidden {
+    display: none !important;
+}
 
 
 

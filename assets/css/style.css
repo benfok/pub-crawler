@@ -194,11 +194,15 @@ section {
     font-weight: bold;
 }
 
-.brewery-list:hover {
+.brewery-list, .saved-list:hover {
     cursor: pointer;
 }
 
 .brewery-list:hover > .brewery-name {
+    color: var(--white);
+}
+
+.saved-list:hover {
     color: var(--white);
 }
 

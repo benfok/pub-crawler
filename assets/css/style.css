@@ -99,7 +99,7 @@ section {
 }
 
 /* List of restaurants */
-#local-results-area {
+#local-results-area, .hidden {
     display: none;
 }
 
@@ -194,7 +194,7 @@ section {
     font-weight: bold;
 }
 
-.brewery-list:hover {
+.brewery-list, .saved-list:hover {
     cursor: pointer;
 }
 
@@ -202,15 +202,32 @@ section {
     color: var(--white);
 }
 
+.saved-list:hover {
+    color: var(--white);
+}
+
 /* Map */
 #map-area {
     background-color: var(--white);
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 #map { 
     width: 100%;
     height: 500px;
+}
+
+#map-header {
+    background-color: var(--black);
+    color: var(--yellow);
+    text-align: center;
+    padding: 2%;
+    width: 100%;
+    font-size: 1.5em;
 }
 
 .add-route-btn {
@@ -222,6 +239,22 @@ section {
     padding: 2%;
 }
 
+/* Instructions */
+#instructions-area {
+    padding: 5%;
+}
+
+.instructions-header {
+    font-family: 'Cormorant Unicase', serif;
+    font-size: 3em;
+    font-weight: bold;
+    padding: 2%;
+}
+
+.instructions-text {
+    font-weight: bold;
+    padding: 2%;
+}
 
 
 
@@ -252,5 +285,9 @@ section {
 
     #route-control-area {
         justify-content: center;
+    }
+
+    #first-column {
+       order: 2;
     }
 }

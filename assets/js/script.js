@@ -150,11 +150,13 @@ let loadMap = function(data){
     for (i = 0; i < data.features.length; i++) {
         let lat = data.features[i].geometry.coordinates[1];
         let long = data.features[i].geometry.coordinates[0];
+        let placeId = data.features[i].properties.place_id;
         // add data for creating <li> elements as a data attribute for the marker popup
-        let listEL = `<li class="brewery-list" data-lat="${data.features[i].geometry.coordinates[1]}" data-long="${data.features[i].geometry.coordinates[0]}" data-id="${data.features[i].properties.place_id}"><span class="brewery-name">${data.features[i].properties.name}</span><br/><span class="brewery-address">${data.features[i].properties.street}</span></li>`;
+        let listEL = `<li class="brewery-list" data-lat="${lat}" data-long="${long}" data-id="${placeId}"><span class="brewery-name">${data.features[i].properties.name}</span><br/><span class="brewery-address">${data.features[i].properties.street}</span></li>`;
         // create element to be added to DOM for marker pop up upon click
         let div = window.document.createElement('div');
             div.dataset.listEl = listEL;
+            div.dataset.id = placeId; 
             div.innerHTML = `<strong>${data.features[i].properties.name}</strong><br/><button class="add-route-btn" onclick="saveToRoute()">Add to Route</button>`;
         // create markers, set popups
             let marker = new mapboxgl.Marker({ 'color': '#000000'})
@@ -341,6 +343,18 @@ let renderSavedList = function(routes){
         restoreRoute(route);
         });
     });
+};
+
+
+// code in progress:
+let markerColorSave = function () {
+    let markersArray = [];
+    for (i = 0; i < map._markers.length; i++){
+            if (map._markers[i]._color !== '#000000') {
+                markersArray.push(map._markers[i]._popup._content.children[0].dataset.id);
+            };
+    
+    };
 };
 
 // event listener for save route button

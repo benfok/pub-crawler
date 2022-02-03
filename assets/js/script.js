@@ -4,11 +4,11 @@ let routeList = document.querySelector('.route-list');
 let chosenLocation;
 let mapStartLat; 
 let mapStartLong;
-// let marker;
 let map = undefined;
 let source = turf.featureCollection([]);
 let apiKeyMap = 'pk.eyJ1IjoiYmVuZm9rIiwiYSI6ImNrejBibzE4bDFhbzgyd213YXE3Ynp1MjAifQ.fbuWSwdUyN9SNuaJS_KLnw';
 let markerCounter = 0;
+// let markersArray = [];
 let savedRoutes = [];
 let mapReady = false;
 
@@ -146,7 +146,7 @@ let loadMap = function(data){
         container: 'map', // container ID
         style: 'mapbox://styles/mapbox/streets-v11', // style URL
         center: [mapStartLong, mapStartLat], // starting position [lng, lat]
-        zoom: 13 // starting zoom
+        zoom: 14 // starting zoom
     });
     
     //adds controls to map
@@ -169,7 +169,6 @@ let loadMap = function(data){
                 .setLngLat([long, lat])
                 .setPopup(new mapboxgl.Popup({className: 'popup'}).setDOMContent(div))
                 .addTo(map);
-        addEventButton();
     };
 
     map.on('load', function(){
@@ -223,33 +222,28 @@ let loadMap = function(data){
     });
 };
 
-// function called by clicking button within map
+// function called by clicking button on a marker popup within map
 let saveToRoute = function () {
     if (markerCounter < 10) {
         let button = document.querySelector('.add-route-btn');
         let ul = document.getElementById('route-ul');
         let li = button.parentElement.dataset.listEl;
         ul.insertAdjacentHTML('beforeend', li);
-        // console.log(routeList);
+        // record that we added a marker
         markerCounter++;
-        // console.log(markerCounter);
+        let popupId = button.dataset.marker;
+        let marker = document.querySelector(`[data-marker='${popupId}']`);
+            // set starting location to red
+            if (markerCounter == 1) {
+                marker.children[0].children[0].children[1].attributes[0].nodeValue = '#F70000';
+            };
+            // set all others to blue
+            if (markerCounter != 1) {
+                marker.children[0].children[0].children[1].attributes[0].nodeValue = '#3FB1CE';
+            };
     } else {
         alert('A maximum of 10 pubs are permitted per route. It is important to drink responsibly.');
     }
-};
-
-let addEventButton = function(){
-    if (markerCounter < 10){
-        for(i=0; i<map._markers.length; i++){
-            let button = map._markers[i]._popup._content.children[0].children[2];
-            button.addEventListener('click', function(event){
-                let markerId = event.path[0].dataset.marker;
-                let marker = document.querySelector(`[data-marker='${markerId}']`);
-                // console.log(marker);
-                marker.children[0].children[0].children[1].attributes[0].nodeValue = '#3FB1CE';
-            });
-        };       
-    };
 };
 
 // adds the route to the map. Starting point is always the first pub, the rest of the route is optimized regarless of selection order
@@ -352,16 +346,24 @@ let renderSavedList = function(routes){
 };
 
 
-// code in progress:
-let markerColorSave = function () {
-    let markersArray = [];
+let markerColorRestore = function () {
+    selectedPubIds = [];
+    let start = routeList.children[0].dataset.id;
+    for (i = 1; i < routeList.children.length; i++){
+        selectedPubIds.push(routeList.children[i].dataset.id);
+    };
+    console.log(selectedPubIds);
     for (i = 0; i < map._markers.length; i++){
-            if (map._markers[i]._color !== '#000000') {
-                markersArray.push(map._markers[i]._popup._content.children[0].dataset.id);
-            };
-    
+        let id = map._markers[i]._popup._content.children[0].dataset.id;
+        if (selectedPubIds.includes(id)) {
+            map._markers[i]._element.children[0].children[0].children[1].attributes.fill.textContent = '#3FB1CE';
+        };
+        if (id == start) {
+            map._markers[i]._element.children[0].children[0].children[1].attributes.fill.textContent = '#F70000';
+        };
     };
 };
+
 
 // event listener for save route button
 document.getElementById('save-route').addEventListener('click', function(event){
@@ -376,7 +378,7 @@ document.getElementById('save-route').addEventListener('click', function(event){
     let item = {
         name: routeName,
         location: chosenLocation.outerHTML,
-        route: routeList.innerHTML
+        route: routeList.innerHTML,
     };
     savedRoutes.push(item);
     // add to storage
@@ -408,10 +410,15 @@ let restoreRoute = function(route){
                 setTimeout(function(){
                 recreateRoute();
             }, 1000);
-        } else {createRoute();}
+        } else {
+            createRoute();
+            markerColorRestore();
+        }
     };
     setTimeout(function(){
         recreateRoute();
     }, 2000);
 };
+
+
 

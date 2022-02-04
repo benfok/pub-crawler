@@ -189,8 +189,12 @@ section {
     font-weight: bold;
 }
 
-.saved-list:hover {
+.brewery-list, .saved-list:hover {
     cursor: pointer;
+}
+
+.brewery-list:hover > .brewery-name {
+    color: var(--white);
 }
 
 .saved-list:hover {
@@ -228,14 +232,6 @@ section {
     font-weight: bold;
     border-radius: 25px;
     padding: 2%;
-}
-
-.fullscreen, .close-fullscreen {
-    margin-top: 2%;
-    background-color: var(--yellow);
-    color: var(--black);
-    padding: .5%;
-    border-radius: 10px;
 }
 
 /* Instructions */
@@ -346,10 +342,6 @@ section {
 .modal-body ol {
     padding-left: 2rem;
     line-height: 1.5;
-}
-
-.mobile {
-    display: none;
 }
 
 

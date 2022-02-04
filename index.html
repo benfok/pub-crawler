@@ -20,81 +20,99 @@
     </header>
     <main>
 
-    <!-- Left column (in desktop view)     -->
-    <div class="column" id="first-column">
+        <!-- Left column (in desktop view)     -->
+        <div class="column" id="first-column">
 
-        <!-- Search bar -->
-        <section id="search-area">
-            <form id="search-form">
-                <label for="city-search-input" id="search-label">Enter City Below</label>
-                <input type="text" name="city-search-input"id="city-search-input" placeholder="Let's find a brewery!">
-                <input class="btn" type="submit" id="search-btn" value="Cheers!"></input>
-            </form>
-            <div id="choose-cities-area">
-                <ul class="cities-list" id="cities-list">
-                    <li class="city-option my-location" id="current-location-option">Use My Current Location</li>
+            <!-- Search bar -->
+            <section id="search-area">
+                <form id="search-form">
+                    <label for="city-search-input" id="search-label">Enter City Below</label>
+                    <input type="text" name="city-search-input"id="city-search-input" placeholder="Let's find a brewery!">
+                    <input class="btn" type="submit" id="search-btn" value="Cheers!"></input>
+                </form>
+                <div id="choose-cities-area">
+                    <ul class="cities-list" id="cities-list">
+                        <li class="city-option my-location" id="current-location-option">Use My Current Location</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Local results go here -->
+            <section id="local-results-area" class="results-area hidden">
+                <h2 class="results-header" id="local-results-header">Local Results</h2>
+                <ul class="results-list" id="local-results-list">
+                    <!-- Local results will go here -->
                 </ul>
-            </div>
-        </section>
-
-        <!-- Local results go here -->
-        <section id="local-results-area" class="results-area hidden">
-            <h2 class="results-header" id="local-results-header">Local Results</h2>
-            <ul class="results-list" id="local-results-list">
-                <!-- Local results will go here -->
-            </ul>
-        </section>
+            </section>
+            
+            <!-- List of selected bars -->
+            <section class="results-area" id="favorite-results-area">
+                <h2 class="results-header" id="favorite-results-header">Current Route</h2>
+                <ul class="results-list" id="favorite-results-list">
+                    <p>Browse places on the map and add them to your route. Routes are always round trip and your first selection will always be your start and end point. Enter your other selections in any order and we will optimize your route for you when you click Plan My Route!</p>
+                </ul>
+                    <!-- Selected pubs on route will go in the following ul -->
+                <ul class="route-list" id="route-ul"></ul>
+            </section>
+            <section class="results-area" id="saved-routes-area">
+                <h2 class="results-header id="saved-routes-header>Saved Routes</h2>
+                <ul class="saved-routes results-list" id="saved-routes"></ul>
+            </section>
+        </div>  
         
-        <!-- List of selected bars -->
-        <section class="results-area" id="favorite-results-area">
-            <h2 class="results-header" id="favorite-results-header">Current Route</h2>
-            <ul class="results-list" id="favorite-results-list">
-                <p>Browse places on the map and add them to your route. Routes are always round trip and your first selection will always be your start and end point. Enter your other selections in any order and we will optimize your route for you when you click Plan My Route!</p>
-            </ul>
-                <!-- Selected pubs on route will go in the following ul -->
-            <ul class="route-list" id="route-ul"></ul>
-        </section>
-        <section class="results-area" id="saved-routes-area">
-            <h2 class="results-header id="saved-routes-header>Saved Routes</h2>
-            <ul class="saved-routes results-list" id="saved-routes"></ul>
-        </section>
-    </div>  
-    
-    <!-- Right column (in desktop view) -->
-    <div class = "column" id="second-column">
+        <!-- Right column (in desktop view) -->
+        <div class = "column" id="second-column">
+            
+            <!-- Placeholder for where the map will go -->
+            <section id="map-area">
+                <div id="instructions-area">
+                    <h2 class="instructions-header">Welcome to PubCrawler!</h2>
+                    <p class="instructions-text">PubCrawler is your one-stop-shop to find the best pubs, bars and breweries in your neighborhood or in your next destination. Choose your favorites and let PubCrawler plan the best route for your night out!</p>
+                    <p class="instructions-text">To use, simply enter the city or neighborhood where you plan on quenching your thirst and PubCrawler will generate a map of the finest establishments in the area. Select the places you'd like to visit, and then click "Plan My Route" below. </p>
+                    <p class="instructions-text">PubCrawler will calculate the ideal route for your pub crawl, so you can spend less time planning and more time in your favorite watering holes. Routes are always walking; because that is safest and most environmentally concious. You can even give your route a name to save it for easy reference next time!</p>
+                    <p class="instructions-header">Cheers!</p>
+                </div>
+                <div id="map-header" class="hidden">
+                    <h2 id="map-header-text"></h2>
+                    <p id="route-details"></p>
+                    <button class="fullscreen"><></button>
+                    <button class="close-fullscreen hidden">X</button>
+                </div>
+                <div id="map" class="hidden"></div>
+            </section>
+            
+            <!-- Control panel for creating/saving/clearing routes -->
+            <div id="route-control-area">
+                <button class="btn" id="create-route">Plan My Route</button>
+                <form id="route-form">
+                    <label id="route-name-label" for="save">Route Name</label>
+                    <input type="text" name="save" id="save">
+                </form>
+                <input class="btn" type="submit" id="save-route" value="Save Route">
+                <button class="btn" id="clear-route">Clear Route</button>
         
-        <!-- Placeholder for where the map will go -->
-        <section id="map-area">
-            <div id="instructions-area">
-                <h2 class="instructions-header">Welcome to PubCrawler!</h2>
-                <p class="instructions-text">PubCrawler is your one-stop-shop to find the best pubs, bars and breweries in your neighborhood or in your next destination. Choose your favorites and let PubCrawler plan the best route for your night out!</p>
-                <p class="instructions-text">To use, simply enter the city or neighborhood where you plan on quenching your thirst and PubCrawler will generate a map of the finest establishments in the area. Select the places you'd like to visit, and then click "Plan My Route" below. </p>
-                <p class="instructions-text">PubCrawler will calculate the ideal route for your pub crawl, so you can spend less time planning and more time in your favorite watering holes. Routes are always walking; because that is safest and most environmentally concious. You can even give your route a name to save it for easy reference next time!</p>
-                <p class="instructions-header">Cheers!</p>
             </div>
-            <div id="map-header" class="hidden">
-                <h2 id="map-header-text"></h2>
-                <p id="route-details"></p>
-                <button class="fullscreen"><></button>
-                <button class="close-fullscreen hidden">X</button>
-            </div>
-            <div id="map" class="hidden"></div>
-        </section>
-        
-        <!-- Control panel for creating/saving/clearing routes -->
-        <div id="route-control-area">
-            <button class="btn" id="create-route">Plan My Route</button>
-            <form id="route-form">
-                <label id="route-name-label" for="save">Route Name</label>
-                <input type="text" name="save" id="save">
-            </form>
-            <input class="btn" type="submit" id="save-route" value="Save Route">
-            <button class="btn" id="clear-route">Clear Route</button>
-    
         </div>
-        
+        <!-- Trigger/Open The Modal -->
+        <button id="modal-btn">Open Modal</button>
 
-    </div>
+        <!-- The Modal -->
+        <div id="instructions-modal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="modal-close">&times;</span>
+                    <h2>Modal Header</h2>
+                </div>
+                <div class="modal-body">
+                    <p>Some text in the Modal Body</p>
+                    <p>Some other text...</p>
+                </div>
+                <div class="modal-footer">
+                    <h3>Modal Footer</h3>
+                </div>
+            </div>
+        </div>
 
     </main>
     <footer>

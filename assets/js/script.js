@@ -8,9 +8,9 @@ let map = undefined;
 let source = turf.featureCollection([]);
 let apiKeyMap = 'pk.eyJ1IjoiYmVuZm9rIiwiYSI6ImNrejBibzE4bDFhbzgyd213YXE3Ynp1MjAifQ.fbuWSwdUyN9SNuaJS_KLnw';
 let markerCounter = 0;
-// let markersArray = [];
 let savedRoutes = [];
 let mapReady = false;
+let toPrint = '';
 
 // function API call to return 5 search results for location entered
 let getCities = function(searchEntry) {
@@ -340,9 +340,10 @@ document.getElementById('clear-route').addEventListener('click', function(event)
     renderMap();
 });
 
-// get search history upon page load
+// get search history upon page load and ready modal
 window.addEventListener('load', function() {
     getSavedRoutes();
+    modalControl();
 });
 
 //  get saved items
@@ -458,13 +459,7 @@ let restoreRoute = function(route){
     }, 2000);
 };
 
-
-
-
-
-// code in progess
-
-
+// function to make both map and header go fullscreen
 let setFullscreen = function (){
 
     let elem = document.querySelector('#map-area');
@@ -488,20 +483,44 @@ function openFullscreen() {
     }
   }
 
+// when user clicks fullscreen make map including header full screen
 document.querySelector('.fullscreen').addEventListener('click', function(event) {
     openFullscreen();
     event.target.className += ' hidden';
     document.querySelector('.close-fullscreen').className = 'close-fullscreen';
     document.querySelector('#map').style.height = '100%';
+    toPrint = document.getElementById('map-area');
 });
 
+// when user clicks close button close full screen and restore map
 document.querySelector('.close-fullscreen').addEventListener('click', function(event) {
     closeFullscreen();
-    console.log(event);
     event.target.className += ' hidden';
     document.querySelector('.fullscreen').className = 'fullscreen';
     document.querySelector('#map').style.height = '500px';
 });
 
+};
 
+let modalControl = function(){
+    let modal = document.getElementById('instructions-modal');
+    let btn = document.getElementById('modal-btn');
+    let span = document.querySelector('.modal-close');
+
+    // When the user clicks the button, open the modal 
+    btn.addEventListener('click', function() {
+        modal.style.display = "block";
+    });
+
+    // When the user clicks on <span> (x), close the modal
+    span.addEventListener('click', function() {
+    modal.style.display = "none";
+    });
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.addEventListener('click', function(event) {
+        if (event.target == modal) {
+        modal.style.display = "none";
+        };
+    });
 };

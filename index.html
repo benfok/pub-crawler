@@ -38,7 +38,7 @@
         </section>
 
         <!-- Local results go here -->
-        <section id="local-results-area" class="results-area">
+        <section id="local-results-area" class="results-area hidden">
             <h2 class="results-header" id="local-results-header">Local Results</h2>
             <ul class="results-list" id="local-results-list">
                 <!-- Local results will go here -->
@@ -73,7 +73,10 @@
                 <p class="instructions-header">Cheers!</p>
             </div>
             <div id="map-header" class="hidden">
-                <h2 id="map-header-text">Route: <span id="route-title"></span></h2>
+                <h2 id="map-header-text"></h2>
+                <p id="route-details"></p>
+                <button class="fullscreen"><></button>
+                <button class="close-fullscreen hidden">X</button>
             </div>
             <div id="map" class="hidden"></div>
         </section>

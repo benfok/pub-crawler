@@ -47,6 +47,9 @@ let getCities = function(searchEntry) {
         // if results are displayed render them to the page and include the lat and long data to pass into the location API call
         } else {
             for (i=0; i < data.length; i++) {
+                if (data[i].state == undefined) {
+                data[i].state = '';
+                }
                 let listEL = `<li class="city-option locations" data-lat="${data[i].lat}" data-long="${data[i].lon}">${data[i].name}, ${data[i].state} (${data[i].country})</li>`;
                 str += listEL;
             };
@@ -57,23 +60,7 @@ let getCities = function(searchEntry) {
         localeSelect();
     };
 
-    // clear search results after selection
-    let clearSearch = function(){
-    searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>';        
-    };
-
-    
-    let renderMap = function (){
-        if (!chosenLocation) {
-            return;
-        }
-        routeList.innerHTML = '';
-        markerCounter = 0;
-        mapReady = false;
-        getPubs()
-    };
-
-    // when location is selected, run get breweries API
+    // accesses newly created city/neighborhood search results, adds event listeners, sets the chosen location and renders the map
     let localeSelect = function(){
         let locales = document.querySelectorAll('.locations')
     
@@ -86,7 +73,48 @@ let getCities = function(searchEntry) {
         });
     };
 
-    // return closest breweries to location selected - 20 results by default
+    // clear search results after selection
+    let clearSearch = function(){
+    searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>';        
+    };
+
+    // load current location. Note that this creates a browser alert to the user to accept use of their current location
+    document.querySelector('.my-location').addEventListener('click', function(){
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+          };
+          
+          function success(loc) {
+            var crd = loc.coords;
+            let listEl = `<li class="city-option my-location locations" data-lat="${crd.latitude}" data-long="${crd.longitude}">My Current Location</li>`;
+            searchResults.innerHTML = listEl;
+            chosenLocation = document.querySelector('.locations');
+            renderMap();
+          };
+          
+          function error(err) {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+          };
+          
+          navigator.geolocation.getCurrentPosition(success, error, options);
+        
+    });
+
+    
+    // function that renders or resets the map. Called from search selection, clear route button or during the restoration of a saved route to reset variables
+    let renderMap = function (){
+        if (!chosenLocation) {
+            return;
+        }
+        routeList.innerHTML = '';
+        markerCounter = 0;
+        mapReady = false;
+        getPubs()
+    };
+
+    // return closest pubs to location selected. Limit is 25 results or a 5000 meter radius. 
     let getPubs = function(){
         let apiKey = 'ec770931d96f478da03865c1cf963f8b';
         mapStartLat = chosenLocation.dataset.lat;
@@ -130,11 +158,12 @@ let getCities = function(searchEntry) {
     // code for map display
 let loadMap = function(data){
     //Removes the instructions from layout
-    let instructions = document.querySelector('#instructions-area');
-    instructions.setAttribute('class', 'hidden');
-    //Replaces the instructions with the map
-    let theMap = document.querySelector('#map');
-    theMap.classList.remove('hidden');
+    document.querySelector('#instructions-area').setAttribute('class', 'hidden');
+    //Display map container
+    document.querySelector('#map').className = '';
+    //Displays map header
+    document.querySelector('#map-header').classList.remove('hidden');
+    document.querySelector('#map-header-text').textContent = chosenLocation.textContent;
     // remove old map if existing
     if(map !== undefined) {
         document.getElementById('map').innerHTML = '';
@@ -146,12 +175,12 @@ let loadMap = function(data){
         container: 'map', // container ID
         style: 'mapbox://styles/mapbox/streets-v11', // style URL
         center: [mapStartLong, mapStartLat], // starting position [lng, lat]
-        zoom: 14 // starting zoom
+        zoom: 13 // starting zoom
     });
     
     //adds controls to map
     map.addControl(new mapboxgl.NavigationControl());
-
+  
     // adds markers with popups and buttons
     for (i = 0; i < data.features.length; i++) {
         let lat = data.features[i].geometry.coordinates[1];
@@ -167,7 +196,7 @@ let loadMap = function(data){
         // create markers, set popups
             let marker = new mapboxgl.Marker({ 'color': '#000000'})
                 .setLngLat([long, lat])
-                .setPopup(new mapboxgl.Popup({className: 'popup'}).setDOMContent(div))
+                .setPopup(new mapboxgl.Popup({className: 'popup', closeOnClick: false}).setDOMContent(div))
                 .addTo(map);
     };
 
@@ -218,6 +247,7 @@ let loadMap = function(data){
             map._markers[i]._element.dataset.marker = i;
             map._markers[i]._popup._content.children[0].children[2].dataset.marker = i;
         };
+        setFullscreen();
         mapReady = true;
     });
 };
@@ -259,6 +289,7 @@ let createRoute = function () {
         // remove the ; from the end of the coordinates string
         slicedCoords = coordinates.slice(0, -1);
     let apiUrl = `https://api.mapbox.com/optimized-trips/v1/${profile}/${slicedCoords}?geometries=geojson&overview=full&roundtrip=true&source=any&destination=any&access_token=${apiKeyMap}`;
+    console.log(apiUrl);
     runRouteApi(apiUrl);
 };
 
@@ -273,7 +304,7 @@ let runRouteApi = function (apiUrl) {
         return response.json();    
     })
     .then(function (data){
-        // console.log(data);
+        showRouteDetails(data);
         let routeGeoJSON = turf.featureCollection([
             turf.feature(data.trips[0].geometry)
         ]);
@@ -287,6 +318,14 @@ let runRouteApi = function (apiUrl) {
 
 };
 
+// displays the route details such as duration, total distance Etc
+let showRouteDetails = function (data){
+    let seconds = data.trips[0].duration / 3600;
+    let hours = seconds.toFixed(2);
+    let distance = data.trips[0].distance / 1000;
+    let stops = data.trips[0].legs.length + 1;
+    document.getElementById('route-details').innerHTML = `<strong>Stops:</strong> ${stops}  <strong>Total Walk Time:</strong> ${hours}hrs  <strong>Total Distance:</strong> ${distance}km`;
+};
 
 // event listener for create route button
 document.getElementById('create-route').addEventListener('click', function(event){
@@ -352,14 +391,16 @@ let markerColorRestore = function () {
     for (i = 1; i < routeList.children.length; i++){
         selectedPubIds.push(routeList.children[i].dataset.id);
     };
-    console.log(selectedPubIds);
+    // console.log(selectedPubIds);
     for (i = 0; i < map._markers.length; i++){
         let id = map._markers[i]._popup._content.children[0].dataset.id;
         if (selectedPubIds.includes(id)) {
             map._markers[i]._element.children[0].children[0].children[1].attributes.fill.textContent = '#3FB1CE';
+            map._markers[i].togglePopup();
         };
         if (id == start) {
             map._markers[i]._element.children[0].children[0].children[1].attributes.fill.textContent = '#F70000';
+            map._markers[i].togglePopup();
         };
     };
 };
@@ -394,11 +435,6 @@ let restoreRoute = function(route){
     let routeData = route.dataset.route;
     routeList.innerHTML = routeData;
     markerCounter = routeList.children.length;
-    //Adds saved route name to title at top
-    let savedRouteName = document.querySelector('#route-title');
-    savedRouteName.textContent = route.textContent;
-    let mapHeader = document.querySelector('#map-header');
-    mapHeader.classList.remove('hidden');
     // the rendering of the saved route requires the map to be ready and loaded. As this can take > 1 second, the setTimeout function ensure that this code waits 2 seconds before initially running, and checks if the map is ready before executing. The function reruns every second after the first try. As this function would just continue to loop, if the fail count reaches 10 it will stop.
     let failCount = 0;
     let recreateRoute = function (){
@@ -411,6 +447,8 @@ let restoreRoute = function(route){
                 recreateRoute();
             }, 1000);
         } else {
+            //Adds saved route name to title at top
+            document.querySelector('#map-header-text').textContent = route.textContent
             createRoute();
             markerColorRestore();
         }
@@ -422,3 +460,48 @@ let restoreRoute = function(route){
 
 
 
+
+
+// code in progess
+
+
+let setFullscreen = function (){
+
+    let elem = document.querySelector('#map-area');
+function openFullscreen() {
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) { /* Safari */
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE11 */
+      elem.msRequestFullscreen();
+    }
+  }
+  
+  function closeFullscreen() {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) { /* Safari */
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { /* IE11 */
+      document.msExitFullscreen();
+    }
+  }
+
+document.querySelector('.fullscreen').addEventListener('click', function(event) {
+    openFullscreen();
+    event.target.className += ' hidden';
+    document.querySelector('.close-fullscreen').className = 'close-fullscreen';
+    document.querySelector('#map').style.height = '100%';
+});
+
+document.querySelector('.close-fullscreen').addEventListener('click', function(event) {
+    closeFullscreen();
+    console.log(event);
+    event.target.className += ' hidden';
+    document.querySelector('.fullscreen').className = 'fullscreen';
+    document.querySelector('#map').style.height = '500px';
+});
+
+
+};

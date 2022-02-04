@@ -98,11 +98,6 @@ section {
     background-color: var(--white);
 }
 
-/* List of restaurants */
-#local-results-area, .hidden {
-    display: none;
-}
-
 .route-list, .saved-list {
     width: 100%;
 }
@@ -256,8 +251,23 @@ section {
     padding: 2%;
 }
 
+/* hidden class*/
+.hidden {
+    display: none !important;
+}
 
+.mapboxgl-popup-close-button {
+    font-size: 30px;
+    margin: 1px;
+}
 
+.mapboxgl-popup-content {
+    padding: 5px 20px 10px 5px !important;
+}
+
+#route-details {
+    font-size: 16px;
+}
 
 
 @media screen and (max-width: 768px) {

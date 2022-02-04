@@ -298,7 +298,7 @@ let showRouteDetails = function (data){
     let distance = data.trips[0].distance / 1000;
     let kms = distance.toFixed(2);
     let stops = data.trips[0].legs.length + 1;
-    document.getElementById('route-details').innerHTML = `<p class="stats"><span><strong>Stops:</strong> ${stops}</span><span><strong>Total Walk Time:</strong> ${hours}hrs</span><span><strong>Total Distance:</strong> ${kms}km</span></p>`;
+    document.getElementById('route-details').innerHTML = `<strong>Stops:</strong> ${stops}  <strong>Total Walk Time:</strong> ${hours}hrs  <strong>Total Distance:</strong> ${kms}km`;
 };
 
 

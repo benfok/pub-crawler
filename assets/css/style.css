@@ -283,7 +283,7 @@ section {
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
   }
-
+  
 /* Modal Content */
 .modal-content {
   position: relative;
@@ -325,23 +325,18 @@ section {
   cursor: pointer;
 }
 
-.modal-header, .modal-footer {
-  padding: 2rem 1rem;
-  background-color: var(--black);
-  color: var(--yellow);
+.modal-header {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
 }
 
-.modal-body {
-    padding: 2rem 1rem;
-}
+.modal-body {padding: 2px 16px;}
 
-.modal-body p {
-    padding-bottom: 1rem;
-}
-
-.modal-body ol {
-    padding-left: 2rem;
-    line-height: 1.5;
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
 }
 
 

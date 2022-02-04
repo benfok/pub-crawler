@@ -1,4 +1,3 @@
-
 let searchEntry = document.getElementById('city-search-input'); // holds city/neighborhood search entry
 let searchResults = document.getElementById('cities-list'); // holds the results of the city search
 let routeList = document.querySelector('.route-list'); // holds the current route list of pubs
@@ -47,6 +46,9 @@ let getCities = function(searchEntry) {
         } else {
             document.getElementById('favorite-results-area').className = 'results-area';
             for (i=0; i < data.length; i++) {
+                if (data[i].state == undefined) {
+                data[i].state = '';
+                }
                 let listEL = `<li class="city-option locations" data-lat="${data[i].lat}" data-long="${data[i].lon}">${data[i].name}, ${data[i].state} (${data[i].country})</li>`;
                 str += listEL;
             };
@@ -57,23 +59,7 @@ let getCities = function(searchEntry) {
         localeSelect();
     };
 
-    // clear search results after selection
-    let clearSearch = function(){
-    searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>';        
-    };
-
-    
-    let renderMap = function (){
-        if (!chosenLocation) {
-            return;
-        }
-        routeList.innerHTML = '';
-        markerCounter = 0;
-        mapReady = false;
-        getPubs()
-    };
-
-    // when location is selected, run get breweries API
+    // accesses newly created city/neighborhood search results, adds event listeners, sets the chosen location and renders the map
     let localeSelect = function(){
         let locales = document.querySelectorAll('.locations')
     
@@ -86,7 +72,48 @@ let getCities = function(searchEntry) {
         });
     };
 
-    // return closest breweries to location selected - 20 results by default
+    // clear search results after selection
+    let clearSearch = function(){
+    searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>';        
+    };
+
+    // load current location. Note that this creates a browser alert to the user to accept use of their current location
+    document.querySelector('.my-location').addEventListener('click', function(){
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+          };
+          
+          function success(loc) {
+            var crd = loc.coords;
+            let listEl = `<li class="city-option my-location locations" data-lat="${crd.latitude}" data-long="${crd.longitude}">My Current Location</li>`;
+            searchResults.innerHTML = listEl;
+            chosenLocation = document.querySelector('.locations');
+            renderMap();
+          };
+          
+          function error(err) {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+          };
+          
+          navigator.geolocation.getCurrentPosition(success, error, options);
+        
+    });
+
+    
+    // function that renders or resets the map. Called from search selection, clear route button or during the restoration of a saved route to reset variables
+    let renderMap = function (){
+        if (!chosenLocation) {
+            return;
+        }
+        routeList.innerHTML = '';
+        markerCounter = 0;
+        mapReady = false;
+        getPubs()
+    };
+
+    // return closest pubs to location selected. Limit is 25 results or a 5000 meter radius. 
     let getPubs = function(){
         let apiKey = 'ec770931d96f478da03865c1cf963f8b';
         mapStartLat = chosenLocation.dataset.lat;
@@ -128,11 +155,12 @@ let getCities = function(searchEntry) {
     // code for map display
 let loadMap = function(data){
     //Removes the instructions from layout
-    let instructions = document.querySelector('#instructions-area');
-    instructions.setAttribute('class', 'hidden');
-    //Replaces the instructions with the map
-    let theMap = document.querySelector('#map');
-    theMap.classList.remove('hidden');
+    document.querySelector('#instructions-area').setAttribute('class', 'hidden');
+    //Display map container
+    document.querySelector('#map').className = '';
+    //Displays map header
+    document.querySelector('#map-header').classList.remove('hidden');
+    document.querySelector('#map-header-text').textContent = chosenLocation.textContent;
     // remove old map if existing
     if(map !== undefined) {
         document.getElementById('map').innerHTML = '';
@@ -149,23 +177,24 @@ let loadMap = function(data){
     
     //adds controls to map
     map.addControl(new mapboxgl.NavigationControl());
-
+  
     // adds markers with popups and buttons
     for (i = 0; i < data.features.length; i++) {
         let lat = data.features[i].geometry.coordinates[1];
         let long = data.features[i].geometry.coordinates[0];
+        let placeId = data.features[i].properties.place_id;
         // add data for creating <li> elements as a data attribute for the marker popup
-        let listEL = `<li class="brewery-list" data-lat="${data.features[i].geometry.coordinates[1]}" data-long="${data.features[i].geometry.coordinates[0]}" data-id="${data.features[i].properties.place_id}"><span class="brewery-name">${data.features[i].properties.name}</span><br/><span class="brewery-address">${data.features[i].properties.street}</span></li>`;
+        let listEL = `<li class="brewery-list" data-lat="${lat}" data-long="${long}" data-id="${placeId}"><span class="brewery-name">${data.features[i].properties.name}</span><br/><span class="brewery-address">${data.features[i].properties.street}</span></li>`;
         // create element to be added to DOM for marker pop up upon click
         let div = window.document.createElement('div');
             div.dataset.listEl = listEL;
+            div.dataset.id = placeId; 
             div.innerHTML = `<strong>${data.features[i].properties.name}</strong><br/><button class="add-route-btn" onclick="saveToRoute()">Add to Route</button>`;
         // create markers, set popups
             let marker = new mapboxgl.Marker({ 'color': '#000000'})
                 .setLngLat([long, lat])
                 .setPopup(new mapboxgl.Popup({className: 'popup'}).setDOMContent(div))
                 .addTo(map);
-        addEventButton();
     };
 
     map.on('load', function(){
@@ -215,37 +244,33 @@ let loadMap = function(data){
             map._markers[i]._element.dataset.marker = i;
             map._markers[i]._popup._content.children[0].children[2].dataset.marker = i;
         };
+        setFullscreen();
         mapReady = true;
     });
 };
 
-// function called by clicking button within map
+// function called by clicking button on a marker popup within map
 let saveToRoute = function () {
     if (markerCounter < 10) {
         let button = document.querySelector('.add-route-btn');
         let ul = document.getElementById('route-ul');
         let li = button.parentElement.dataset.listEl;
         ul.insertAdjacentHTML('beforeend', li);
-        // console.log(routeList);
+        // record that we added a marker
         markerCounter++;
-        // console.log(markerCounter);
+        let popupId = button.dataset.marker;
+        let marker = document.querySelector(`[data-marker='${popupId}']`);
+            // set starting location to red
+            if (markerCounter == 1) {
+                marker.children[0].children[0].children[1].attributes[0].nodeValue = '#F70000';
+            };
+            // set all others to blue
+            if (markerCounter != 1) {
+                marker.children[0].children[0].children[1].attributes[0].nodeValue = '#3FB1CE';
+            };
     } else {
         alert('A maximum of 10 pubs are permitted per route. It is important to drink responsibly.');
     }
-};
-
-let addEventButton = function(){
-    if (markerCounter < 10){
-        for(i=0; i<map._markers.length; i++){
-            let button = map._markers[i]._popup._content.children[0].children[2];
-            button.addEventListener('click', function(event){
-                let markerId = event.path[0].dataset.marker;
-                let marker = document.querySelector(`[data-marker='${markerId}']`);
-                // console.log(marker);
-                marker.children[0].children[0].children[1].attributes[0].nodeValue = '#3FB1CE';
-            });
-        };       
-    };
 };
 
 // adds the route to the map. Starting point is always the first pub, the rest of the route is optimized regarless of selection order
@@ -261,6 +286,7 @@ let createRoute = function () {
         // remove the ; from the end of the coordinates string
         slicedCoords = coordinates.slice(0, -1);
     let apiUrl = `https://api.mapbox.com/optimized-trips/v1/${profile}/${slicedCoords}?geometries=geojson&overview=full&roundtrip=true&source=any&destination=any&access_token=${apiKeyMap}`;
+    console.log(apiUrl);
     runRouteApi(apiUrl);
 };
 
@@ -275,7 +301,7 @@ let runRouteApi = function (apiUrl) {
         return response.json();    
     })
     .then(function (data){
-        // console.log(data);
+        showRouteDetails(data);
         let routeGeoJSON = turf.featureCollection([
             turf.feature(data.trips[0].geometry)
         ]);
@@ -289,7 +315,6 @@ let runRouteApi = function (apiUrl) {
 
 };
 
-
 // displays the route details such as duration, total distance Etc
 let showRouteDetails = function (data){
     let seconds = data.trips[0].duration / 3600;
@@ -299,7 +324,6 @@ let showRouteDetails = function (data){
     let stops = data.trips[0].legs.length + 1;
     document.getElementById('route-details').innerHTML = `<strong>Stops:</strong> ${stops}  <strong>Total Walk Time:</strong> ${hours}hrs  <strong>Total Distance:</strong> ${kms}km`;
 };
-
 
 // event listener for create route button
 document.getElementById('create-route').addEventListener('click', function(event){
@@ -315,9 +339,10 @@ document.getElementById('clear-route').addEventListener('click', function(event)
     renderMap();
 });
 
-// get search history upon page load
+// get search history upon page load and ready modal
 window.addEventListener('load', function() {
     getSavedRoutes();
+    modalControl();
 });
 
 //  get saved items
@@ -359,6 +384,7 @@ let renderSavedList = function(routes){
     });
 };
 
+
 let markerColorRestore = function () {
     selectedPubIds = [];
     let start = routeList.children[0].dataset.id;
@@ -378,7 +404,6 @@ let markerColorRestore = function () {
 };
 
 
-
 // event listener for save route button
 document.getElementById('save-route').addEventListener('click', function(event){
     event.preventDefault();
@@ -392,7 +417,7 @@ document.getElementById('save-route').addEventListener('click', function(event){
     let item = {
         name: routeName,
         location: chosenLocation.outerHTML,
-        route: routeList.innerHTML
+        route: routeList.innerHTML,
     };
     savedRoutes.push(item);
     // add to storage
@@ -409,11 +434,6 @@ let restoreRoute = function(route){
     let routeData = route.dataset.route;
     routeList.innerHTML = routeData;
     markerCounter = routeList.children.length;
-    //Adds saved route name to title at top
-    let savedRouteName = document.querySelector('#route-title');
-    savedRouteName.textContent = route.textContent;
-    let mapHeader = document.querySelector('#map-header');
-    mapHeader.classList.remove('hidden');
     // the rendering of the saved route requires the map to be ready and loaded. As this can take > 1 second, the setTimeout function ensure that this code waits 2 seconds before initially running, and checks if the map is ready before executing. The function reruns every second after the first try. As this function would just continue to loop, if the fail count reaches 10 it will stop.
     let failCount = 0;
     let recreateRoute = function (){
@@ -425,7 +445,12 @@ let restoreRoute = function(route){
                 setTimeout(function(){
                 recreateRoute();
             }, 1000);
-        } else {createRoute();}
+        } else {
+            //Adds saved route name to title at top
+            document.querySelector('#map-header-text').textContent = route.textContent
+            createRoute();
+            markerColorRestore();
+        }
     };
     setTimeout(function(){
         recreateRoute();
@@ -497,4 +522,3 @@ let modalControl = function(){
         };
     });
 };
-

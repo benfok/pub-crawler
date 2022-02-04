@@ -44,7 +44,6 @@ let getCities = function(searchEntry) {
             str += listEl;
         // if results are displayed render them to the page and include the lat and long data to pass into the location API call
         } else {
-            document.getElementById('favorite-results-area').className = 'results-area';
             for (i=0; i < data.length; i++) {
                 if (data[i].state == undefined) {
                 data[i].state = '';
@@ -158,9 +157,10 @@ let loadMap = function(data){
     document.querySelector('#instructions-area').setAttribute('class', 'hidden');
     //Display map container
     document.querySelector('#map').className = '';
-    //Displays map header
+    //Displays map header and current routes section
     document.querySelector('#map-header').classList.remove('hidden');
     document.querySelector('#map-header-text').textContent = chosenLocation.textContent;
+    document.getElementById('favorite-results-area').className = 'results-area';
     // remove old map if existing
     if(map !== undefined) {
         document.getElementById('map').innerHTML = '';
@@ -335,7 +335,6 @@ document.getElementById('create-route').addEventListener('click', function(event
 // event listener for clear route button
 document.getElementById('clear-route').addEventListener('click', function(event){
     event.preventDefault();
-    document.getElementById('favorite-results-area').className += ' hidden';
     renderMap();
 });
 
@@ -497,9 +496,9 @@ let setFullscreen = function (){
         document.querySelector('.fullscreen').className = 'fullscreen';
         document.querySelector('#map').style.height = '500px';
     });
-
 };
 
+// control when and how the instructions modal appears
 let modalControl = function(){
     let modal = document.getElementById('instructions-modal');
     let btn = document.getElementById('modal-btn');
@@ -522,3 +521,12 @@ let modalControl = function(){
         };
     });
 };
+
+// move the search function to the top of the page in mobile view
+window.addEventListener("resize",function () {
+    if (window.innerWidth < 768) {
+        document.getElementById("second-column").prepend(document.getElementById('search-area'));
+    } else if (window.innerWidth >= 768) {
+        document.getElementById("first-column").prepend(document.getElementById('search-area'));
+    }
+})

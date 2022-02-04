@@ -46,10 +46,9 @@
             </section>
             
             <!-- List of selected bars -->
-            <section class="results-area" id="favorite-results-area">
+            <section class="results-area hidden" id="favorite-results-area">
                 <h2 class="results-header" id="favorite-results-header">Current Route</h2>
                 <ul class="results-list" id="favorite-results-list">
-                    <p>Browse places on the map and add them to your route. Routes are always round trip and your first selection will always be your start and end point. Enter your other selections in any order and we will optimize your route for you when you click Plan My Route!</p>
                 </ul>
                     <!-- Selected pubs on route will go in the following ul -->
                 <ul class="route-list" id="route-ul"></ul>
@@ -67,9 +66,9 @@
             <section id="map-area">
                 <div id="instructions-area">
                     <h2 class="instructions-header">Welcome to PubCrawler!</h2>
-                    <p class="instructions-text">PubCrawler is your one-stop-shop to find the best pubs, bars and breweries in your neighborhood or in your next destination. Choose your favorites and let PubCrawler plan the best route for your night out!</p>
+                    <p class="instructions-text">PubCrawler is your one-stop-shop to find the best pubs, bars and breweries in your neighborhood or at your next destination. Choose your favorites and let PubCrawler plan the best route for your night out!</p>
                     <p class="instructions-text">To use, simply enter the city or neighborhood where you plan on quenching your thirst and PubCrawler will generate a map of the finest establishments in the area. Select the places you'd like to visit, and then click "Plan My Route" below. </p>
-                    <p class="instructions-text">PubCrawler will calculate the ideal route for your pub crawl, so you can spend less time planning and more time in your favorite watering holes. Routes are always walking; because that is safest and most environmentally concious. You can even give your route a name to save it for easy reference next time!</p>
+                    <p class="instructions-text">PubCrawler will calculate the ideal route for your pub crawl, so you can spend less time planning and more time in your favorite watering holes. Routes are always walking; because that is safest and most environmentally concious way to Pub Crawl. You can even give your route a name to save it for easy reference next time!</p>
                     <p class="instructions-header">Cheers!</p>
                 </div>
                 <div id="map-header" class="hidden">
@@ -90,7 +89,7 @@
                 </form>
                 <input class="btn" type="submit" id="save-route" value="Save Route">
                 <button class="btn" id="clear-route">Clear Route</button>
-        
+       
             </div>
         </div>
         <!-- Trigger/Open The Modal -->
@@ -102,14 +101,22 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <span class="modal-close">&times;</span>
-                    <h2>Modal Header</h2>
+                    <h2>Welcome to PubCrawler</h2>
                 </div>
                 <div class="modal-body">
-                    <p>Some text in the Modal Body</p>
-                    <p>Some other text...</p>
+                    <p>Because sometimes we just need a simple step by step guide.</p>
+                    <ol>
+                        <li><strong>Search</strong> for your location. Enter a city, town or neighborhood into the search bar.</li>
+                        <li>Results will show on the map. <strong>Browse and add</strong> them to your route.</li>
+                        <li>Because PubCrawler knows the importance of getting back to where you started a pub crawl, routes are always <strong>round trip</strong> and your first selection will always be both your start and end point. <em>(This location shows as red on the map.)</em>
+                        <li>Add your other selections in <strong>any order</strong> you like.</li>
+                        <li>Click <strong>Plan My Route</strong> and PubCrawler will calculate the most optimal walking route for you!</li>
+                        <li>Give your route a <strong>name</strong> and save it for future use.</li>
+                        <li>Routes are limited to 10 selections - We all need to drink responsibily.</li>
+                    </ol>
                 </div>
                 <div class="modal-footer">
-                    <h3>Modal Footer</h3>
+                    <h3>Cheers!</h3>
                 </div>
             </div>
         </div>

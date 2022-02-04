@@ -44,6 +44,7 @@ let getCities = function(searchEntry) {
             str += listEl;
         // if results are displayed render them to the page and include the lat and long data to pass into the location API call
         } else {
+            document.getElementById('favorite-results-area').className = 'results-area';
             for (i=0; i < data.length; i++) {
                 if (data[i].state == undefined) {
                 data[i].state = '';
@@ -192,7 +193,7 @@ let loadMap = function(data){
         // create markers, set popups
             let marker = new mapboxgl.Marker({ 'color': '#000000'})
                 .setLngLat([long, lat])
-                .setPopup(new mapboxgl.Popup({className: 'popup', closeOnClick: false}).setDOMContent(div))
+                .setPopup(new mapboxgl.Popup({className: 'popup'}).setDOMContent(div))
                 .addTo(map);
     };
 
@@ -319,8 +320,9 @@ let showRouteDetails = function (data){
     let seconds = data.trips[0].duration / 3600;
     let hours = seconds.toFixed(2);
     let distance = data.trips[0].distance / 1000;
+    let kms = distance.toFixed(2);
     let stops = data.trips[0].legs.length + 1;
-    document.getElementById('route-details').innerHTML = `<strong>Stops:</strong> ${stops}  <strong>Total Walk Time:</strong> ${hours}hrs  <strong>Total Distance:</strong> ${distance}km`;
+    document.getElementById('route-details').innerHTML = `<strong>Stops:</strong> ${stops}  <strong>Total Walk Time:</strong> ${hours}hrs  <strong>Total Distance:</strong> ${kms}km`;
 };
 
 // event listener for create route button
@@ -333,6 +335,7 @@ document.getElementById('create-route').addEventListener('click', function(event
 // event listener for clear route button
 document.getElementById('clear-route').addEventListener('click', function(event){
     event.preventDefault();
+    document.getElementById('favorite-results-area').className += ' hidden';
     renderMap();
 });
 
@@ -393,11 +396,9 @@ let markerColorRestore = function () {
         let id = map._markers[i]._popup._content.children[0].dataset.id;
         if (selectedPubIds.includes(id)) {
             map._markers[i]._element.children[0].children[0].children[1].attributes.fill.textContent = '#3FB1CE';
-            map._markers[i].togglePopup();
         };
         if (id == start) {
             map._markers[i]._element.children[0].children[0].children[1].attributes.fill.textContent = '#F70000';
-            map._markers[i].togglePopup();
         };
     };
 };
@@ -425,6 +426,7 @@ document.getElementById('save-route').addEventListener('click', function(event){
 });
 
 let restoreRoute = function(route){
+    document.getElementById('favorite-results-area').className = 'results-area';
     let parser = new DOMParser();
     let locData = parser.parseFromString(route.dataset.location, 'text/html');
     chosenLocation = locData.children[0].children[1].children[0];

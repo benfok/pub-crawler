@@ -1,25 +1,25 @@
-let searchEntry = document.getElementById('city-search-input');
-let searchResults = document.getElementById('cities-list');
-let routeList = document.querySelector('.route-list');
-let chosenLocation;
-let mapStartLat; 
-let mapStartLong;
-// let marker;
-let map = undefined;
-let source = turf.featureCollection([]);
-let apiKeyMap = 'pk.eyJ1IjoiYmVuZm9rIiwiYSI6ImNrejBibzE4bDFhbzgyd213YXE3Ynp1MjAifQ.fbuWSwdUyN9SNuaJS_KLnw';
-let markerCounter = 0;
-let savedRoutes = [];
-let mapReady = false;
 
-// function API call to return 5 search results for location entered
+let searchEntry = document.getElementById('city-search-input'); // holds city/neighborhood search entry
+let searchResults = document.getElementById('cities-list'); // holds the results of the city search
+let routeList = document.querySelector('.route-list'); // holds the current route list of pubs
+let chosenLocation; // stores the current location selected and shown on the map
+let mapStartLat; // stores the starting latitude for the map based on the location chosen
+let mapStartLong; // stores the starting latitude for the map based on the location chosen
+let map = undefined; // stores the map and allows us to clear if new maps are loaded
+let source = turf.featureCollection([]); // the source data for the route
+let apiKeyMap = 'pk.eyJ1IjoiYmVuZm9rIiwiYSI6ImNrejBibzE4bDFhbzgyd213YXE3Ynp1MjAifQ.fbuWSwdUyN9SNuaJS_KLnw'; // api key for MapBox
+let markerCounter = 0; // counter to ensure that maximum pubs (markers) per route is not exceeded
+let savedRoutes = []; // collects routes to save to localStorage
+let mapReady = false; // trigger for when the map has fully loaded
+
+
+// function API call to return 5 search results for location entered. Calls openweathermap API. 
 let getCities = function(searchEntry) {
     let apiUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${searchEntry}&limit=5&appid=feb08a39587f398b12842fe3303816d6`;
     // console.log(apiUrl);   
     fetch(apiUrl)
         .then(function(response){
             if (!response.ok) {
-                // currently an alert - need to change this
                 alert('Error: ' + response.statusText);
                 } 
             return response.json();    
@@ -29,9 +29,8 @@ let getCities = function(searchEntry) {
             renderResults(data);
             })
         .catch(function (error) {
-            // need to change alert for something else
             console.log(error);
-            alert('Unable to connect to OpenWeatherMap.org');
+            alert('Unable to connect to the host server. Please try again');
         });
     };
 
@@ -42,10 +41,11 @@ let getCities = function(searchEntry) {
         // if no results returned display a message
         let str = '';
         if (data.length === 0) {
-            let listEl = `<li class="city-option locations">No Results - Please Search Again</li>`;
+            let listEl = `<li class="city-option">No Results - Please Search Again</li>`;
             str += listEl;
         // if results are displayed render them to the page and include the lat and long data to pass into the location API call
         } else {
+            document.getElementById('favorite-results-area').className = 'results-area';
             for (i=0; i < data.length; i++) {
                 let listEL = `<li class="city-option locations" data-lat="${data[i].lat}" data-long="${data[i].lon}">${data[i].name}, ${data[i].state} (${data[i].country})</li>`;
                 str += listEL;
@@ -99,7 +99,6 @@ let getCities = function(searchEntry) {
         fetch(apiUrl)
             .then(function(response){
                 if (!response.ok) {
-                    // need to change alert for something else
                     alert('Error: ' + response.statusText);
                     } 
                 return response.json();    
@@ -109,7 +108,6 @@ let getCities = function(searchEntry) {
                 loadMap(data);
                 })
             .catch(function (error) {
-                // need to change alert for something else
                 console.log(error);
                 alert('Unable to connect');
             });
@@ -120,7 +118,7 @@ let getCities = function(searchEntry) {
         event.preventDefault();
         // handle blank search
         if (searchEntry.value === '') {
-            alert('Please enter a location into the search box');
+            searchEntry.value = ' ';
         } else {
         // run API to return results
         getCities(searchEntry.value);
@@ -292,6 +290,17 @@ let runRouteApi = function (apiUrl) {
 };
 
 
+// displays the route details such as duration, total distance Etc
+let showRouteDetails = function (data){
+    let seconds = data.trips[0].duration / 3600;
+    let hours = seconds.toFixed(2);
+    let distance = data.trips[0].distance / 1000;
+    let kms = distance.toFixed(2);
+    let stops = data.trips[0].legs.length + 1;
+    document.getElementById('route-details').innerHTML = `<strong>Stops:</strong> ${stops}  <strong>Total Walk Time:</strong> ${hours}hrs  <strong>Total Distance:</strong> ${kms}km`;
+};
+
+
 // event listener for create route button
 document.getElementById('create-route').addEventListener('click', function(event){
     event.preventDefault();
@@ -302,6 +311,7 @@ document.getElementById('create-route').addEventListener('click', function(event
 // event listener for clear route button
 document.getElementById('clear-route').addEventListener('click', function(event){
     event.preventDefault();
+    document.getElementById('favorite-results-area').className += ' hidden';
     renderMap();
 });
 
@@ -349,6 +359,26 @@ let renderSavedList = function(routes){
     });
 };
 
+let markerColorRestore = function () {
+    selectedPubIds = [];
+    let start = routeList.children[0].dataset.id;
+    for (i = 1; i < routeList.children.length; i++){
+        selectedPubIds.push(routeList.children[i].dataset.id);
+    };
+    // console.log(selectedPubIds);
+    for (i = 0; i < map._markers.length; i++){
+        let id = map._markers[i]._popup._content.children[0].dataset.id;
+        if (selectedPubIds.includes(id)) {
+            map._markers[i]._element.children[0].children[0].children[1].attributes.fill.textContent = '#3FB1CE';
+        };
+        if (id == start) {
+            map._markers[i]._element.children[0].children[0].children[1].attributes.fill.textContent = '#F70000';
+        };
+    };
+};
+
+
+
 // event listener for save route button
 document.getElementById('save-route').addEventListener('click', function(event){
     event.preventDefault();
@@ -371,6 +401,7 @@ document.getElementById('save-route').addEventListener('click', function(event){
 });
 
 let restoreRoute = function(route){
+    document.getElementById('favorite-results-area').className = 'results-area';
     let parser = new DOMParser();
     let locData = parser.parseFromString(route.dataset.location, 'text/html');
     chosenLocation = locData.children[0].children[1].children[0];
@@ -399,5 +430,71 @@ let restoreRoute = function(route){
     setTimeout(function(){
         recreateRoute();
     }, 2000);
+};
+
+// function to make both map and header go fullscreen
+let setFullscreen = function (){
+
+    let elem = document.querySelector('#map-area');
+    function openFullscreen() {
+        if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+        elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE11 */
+        elem.msRequestFullscreen();
+        }
+    }
+  
+    function closeFullscreen() {
+        if (document.exitFullscreen) {
+        document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+        document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+        document.msExitFullscreen();
+        }
+    }
+
+    // when user clicks fullscreen make map including header full screen
+    document.querySelector('.fullscreen').addEventListener('click', function(event) {
+        openFullscreen();
+        event.target.className += ' hidden';
+        document.querySelector('.close-fullscreen').className = 'close-fullscreen';
+        document.querySelector('#map').style.height = '100%';
+        toPrint = document.getElementById('map-area');
+    });
+
+    // when user clicks close button close full screen and restore map
+    document.querySelector('.close-fullscreen').addEventListener('click', function(event) {
+        closeFullscreen();
+        event.target.className += ' hidden';
+        document.querySelector('.fullscreen').className = 'fullscreen';
+        document.querySelector('#map').style.height = '500px';
+    });
+
+};
+
+let modalControl = function(){
+    let modal = document.getElementById('instructions-modal');
+    let btn = document.getElementById('modal-btn');
+    let span = document.querySelector('.modal-close');
+
+    // When the user clicks the button, open the modal 
+    btn.addEventListener('click', function() {
+        modal.style.display = "block";
+    });
+
+    // When the user clicks on <span> (x), close the modal
+    span.addEventListener('click', function() {
+    modal.style.display = "none";
+    });
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.addEventListener('click', function(event) {
+        if (event.target == modal) {
+        modal.style.display = "none";
+        };
+    });
 };
 

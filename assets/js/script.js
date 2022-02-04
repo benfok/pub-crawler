@@ -114,7 +114,7 @@ let getCities = function(searchEntry) {
         getPubs()
     };
 
-    // return closest pubs to location selected. Limit is 25 results or a 5000 meter radius.
+    // return closest pubs to location selected. Limit is 25 results or a 5000 meter radius. 
     let getPubs = function(){
         let apiKey = 'ec770931d96f478da03865c1cf963f8b';
         mapStartLat = chosenLocation.dataset.lat;
@@ -180,7 +180,7 @@ let loadMap = function(data){
     
     //adds controls to map
     map.addControl(new mapboxgl.NavigationControl());
-
+  
     // adds markers with popups and buttons
     for (i = 0; i < data.features.length; i++) {
         let lat = data.features[i].geometry.coordinates[1];
@@ -196,7 +196,7 @@ let loadMap = function(data){
         // create markers, set popups
             let marker = new mapboxgl.Marker({ 'color': '#000000'})
                 .setLngLat([long, lat])
-                .setPopup(new mapboxgl.Popup({className: 'popup'}).setDOMContent(div))
+                .setPopup(new mapboxgl.Popup({className: 'popup', closeOnClick: false}).setDOMContent(div))
                 .addTo(map);
     };
 
@@ -247,6 +247,7 @@ let loadMap = function(data){
             map._markers[i]._element.dataset.marker = i;
             map._markers[i]._popup._content.children[0].children[2].dataset.marker = i;
         };
+        setFullscreen();
         mapReady = true;
     });
 };
@@ -280,7 +281,7 @@ let createRoute = function () {
     if (markerCounter < 2) {
         return;
     }
-    let profile = 'mapbox/cycling';
+    let profile = 'mapbox/walking';
     let coordinates = '';
         for (i=0; i < routeList.children.length; i++) {
             coordinates += `${routeList.children[i].dataset.long},${routeList.children[i].dataset.lat};`;
@@ -288,6 +289,7 @@ let createRoute = function () {
         // remove the ; from the end of the coordinates string
         slicedCoords = coordinates.slice(0, -1);
     let apiUrl = `https://api.mapbox.com/optimized-trips/v1/${profile}/${slicedCoords}?geometries=geojson&overview=full&roundtrip=true&source=any&destination=any&access_token=${apiKeyMap}`;
+    console.log(apiUrl);
     runRouteApi(apiUrl);
 };
 
@@ -302,7 +304,7 @@ let runRouteApi = function (apiUrl) {
         return response.json();    
     })
     .then(function (data){
-        storeRouteInfo(data);
+        showRouteDetails(data);
         let routeGeoJSON = turf.featureCollection([
             turf.feature(data.trips[0].geometry)
         ]);
@@ -316,8 +318,13 @@ let runRouteApi = function (apiUrl) {
 
 };
 
-let storeRouteInfo = function (data){
-    console.log(data);
+// displays the route details such as duration, total distance Etc
+let showRouteDetails = function (data){
+    let seconds = data.trips[0].duration / 3600;
+    let hours = seconds.toFixed(2);
+    let distance = data.trips[0].distance / 1000;
+    let stops = data.trips[0].legs.length + 1;
+    document.getElementById('route-details').innerHTML = `<strong>Stops:</strong> ${stops}  <strong>Total Walk Time:</strong> ${hours}hrs  <strong>Total Distance:</strong> ${distance}km`;
 };
 
 // event listener for create route button
@@ -389,9 +396,11 @@ let markerColorRestore = function () {
         let id = map._markers[i]._popup._content.children[0].dataset.id;
         if (selectedPubIds.includes(id)) {
             map._markers[i]._element.children[0].children[0].children[1].attributes.fill.textContent = '#3FB1CE';
+            map._markers[i].togglePopup();
         };
         if (id == start) {
             map._markers[i]._element.children[0].children[0].children[1].attributes.fill.textContent = '#F70000';
+            map._markers[i].togglePopup();
         };
     };
 };
@@ -451,3 +460,48 @@ let restoreRoute = function(route){
 
 
 
+
+
+// code in progess
+
+
+let setFullscreen = function (){
+
+    let elem = document.querySelector('#map-area');
+function openFullscreen() {
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) { /* Safari */
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE11 */
+      elem.msRequestFullscreen();
+    }
+  }
+  
+  function closeFullscreen() {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) { /* Safari */
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { /* IE11 */
+      document.msExitFullscreen();
+    }
+  }
+
+document.querySelector('.fullscreen').addEventListener('click', function(event) {
+    openFullscreen();
+    event.target.className += ' hidden';
+    document.querySelector('.close-fullscreen').className = 'close-fullscreen';
+    document.querySelector('#map').style.height = '100%';
+});
+
+document.querySelector('.close-fullscreen').addEventListener('click', function(event) {
+    closeFullscreen();
+    console.log(event);
+    event.target.className += ' hidden';
+    document.querySelector('.fullscreen').className = 'fullscreen';
+    document.querySelector('#map').style.height = '500px';
+});
+
+
+};

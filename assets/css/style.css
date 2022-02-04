@@ -273,6 +273,13 @@ section {
     font-size: 16px;
 }
 
+.stats {
+    padding: 1rem 2rem;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+
 /* The Modal (background) */
 .modal {
     display: none; /* Hidden by default */
@@ -322,9 +329,9 @@ section {
   font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
-  color: #000;
+.modal-close:hover,
+.modal-close:focus {
+  color: var(--yellow);
   text-decoration: none;
   cursor: pointer;
 }

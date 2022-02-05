@@ -36,7 +36,7 @@ let getCities = function(searchEntry) {
     // render up to 5 locations to the user
     let renderResults = function(data){
         // clear the search results
-        clearSearch();
+        searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>'; 
         // if no results returned display a message
         let str = '';
         if (data.length === 0) {
@@ -72,11 +72,7 @@ let getCities = function(searchEntry) {
         });
     };
 
-    // clear search results after selection
-    let clearSearch = function(){
-    searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>';        
-    };
-
+    
     // load current location. Note that this creates a browser alert to the user to accept use of their current location
     document.querySelector('.my-location').addEventListener('click', function(){
         const options = {
@@ -490,6 +486,7 @@ let setFullscreen = function (){
         toPrint = document.getElementById('map-area');
     });
 
+        // event listener on full screen change
     // when user clicks close button close full screen and restore map
     document.querySelector('.close-fullscreen').addEventListener('click', function(event) {
         closeFullscreen();
@@ -522,3 +519,5 @@ let modalControl = function(){
         };
     });
 };
+
+

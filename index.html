@@ -81,17 +81,17 @@
             
             <!-- Control panel for creating/saving/clearing routes -->
             <div id="route-control-area">
-                <button class="btn" id="create-route">Plan My Route</button>
-                <form id="route-form">
+                <form id="route-form" class="route-control-elem">
                     <label id="route-name-label" for="save">Route Name</label>
-                    <input type="text" name="save" id="save">
+                    <input type="text" name="save" id="save" class="route-control-elem">
                 </form>
-                <input class="btn" type="submit" id="save-route" value="Save Route">
-                <button class="btn" id="clear-route">Clear Route</button>
+                <button class="btn route-control-elem" id="create-route">Plan My Route</button>
+                <input class="btn" type="submit" id="save-route" class="route-control-elem"value="Save Route">
+                <button class="btn route-control-elem" id="clear-route">Clear Route</button>
             </div>
         </div>
         <!-- Trigger/Open The Modal -->
-        <button id="modal-btn">Open Modal</button>
+        <button id="modal-btn">Need Help?</button>
 
         <!-- The Modal -->
         <div id="instructions-modal" class="modal">

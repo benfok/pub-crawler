@@ -409,6 +409,7 @@ const restoreRoute = function(route){
     }, 2000);
 };
 
+// look into adding document.webkitCurrentFullScreenElement
 // function to make both map and header go fullscreen
 const setFullscreen = function (){
     document.getElementById('toggle-fullscreen').addEventListener('click', function() {
@@ -493,6 +494,13 @@ document.getElementById('create-route').addEventListener('click', function(event
 document.getElementById('clear-route').addEventListener('click', function(event){
     event.preventDefault();
     renderMap();
+});
+
+// event listener for clear saved results button. Clears local storage
+document.getElementById('clear-saved').addEventListener('click', function(event){
+    event.preventDefault();
+    localStorage.clear();
+    getSavedRoutes();
 });
 
 // get search history upon page load and ready modal

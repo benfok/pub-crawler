@@ -26,7 +26,7 @@
             <!-- Search bar -->
             <section id="search-area">
                 <form id="search-form">
-                    <label for="city-search-input" id="search-label">Enter City Below</label>
+                    <label for="city-search-input" id="search-label">Enter City Below:</label>
                     <input type="text" name="city-search-input"id="city-search-input" placeholder="Let's find a brewery!">
                     <input class="btn" type="submit" id="search-btn" value="Cheers!"></input>
                 </form>
@@ -83,12 +83,13 @@
             <!-- Control panel for creating/saving/clearing routes -->
             <div id="route-control-area">
                 <form id="route-form" class="route-control-elem">
-                    <label id="route-name-label" for="save">Route Name</label>
-                    <input type="text" name="save" id="save" class="route-control-elem">
+                    <label id="route-name-label" for="save">Route Name:</label>
+                    <input type="text" name="save" id="save" class="route-control-elem" placeholder="Name Your Route">
                 </form>
                 <button class="btn route-control-elem" id="create-route">Plan My Route</button>
                 <input class="btn" type="submit" id="save-route" class="route-control-elem"value="Save Route">
                 <button class="btn route-control-elem" id="clear-route">Clear Route</button>
+                <button class="btn route-control-elem" id="remove-markers">Remove Markers</button>
             </div>
         </div>
         <!-- Trigger/Open The Modal -->
@@ -112,6 +113,7 @@
                         <li>Add your other selections in <strong>any order</strong> you like.</li>
                         <li>Click <strong>Plan My Route</strong> and PubCrawler will calculate the most optimal walking route for you!</li>
                         <li>Give your route a <strong>name</strong> and save it for future use.</li>
+                        <li>Want to start over? <strong>Clear Route</strong> will remove your selections and reload the current city or neighborhood.</li>
                         <li>Routes are limited to 10 selections - We all need to drink responsibily.</li>
                     </ol>
                 </div>

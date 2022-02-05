@@ -414,7 +414,7 @@ const restoreRoute = function(route){
 const setFullscreen = function (){
     document.getElementById('toggle-fullscreen').addEventListener('click', function() {
         let elem = document.querySelector('#map-area');
-        if(document.fullscreenElement) {
+        if(document.fullscreenElement || document.webkitCurrentFullScreenElement) {
            closeFullscreen(); 
         } else {
             openFullscreen(elem);
@@ -423,7 +423,7 @@ const setFullscreen = function (){
     });
     
     document.addEventListener('fullscreenchange', function(){
-        if (!document.fullscreenElement) {
+        if (!document.fullscreenElement && !document.webkitCurrentFullScreenElement) {
             document.getElementById('map').style.height = null;
         };
     });

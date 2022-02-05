@@ -29,7 +29,12 @@ SO THAT I can easily revisit them later or pull them up when I am out on the tow
 - PubCrawler is built using HTML, CSS and JavaScript. 
 - All functionality and styling was achieved using vanilla JavaScript and CSS, without the aid of external libraries. 
 - The information is pulled from the OpenWeatherMap, Geoapify and Mapbox APIs. 
-- The site is fully responsive across all devices and screen sizes. 
+  - OpenWeatherMap was used to return city and neighborhood locations for the user to choose from. PubCrawler can be used worldwide!
+  - Geoapify Places API was used to then search based on the selected location and return results within certain categories (bars, pubs, breweries). The search returns the results sorted by ascending distance, within a 5km radius, with a maximum of 25. These limits are configurable on the back end.
+  - Mapbox was used to render these locations onto a map, and to then create an optimized walking route between them. A helpful function of this is that, other than the first location always being the start and end of the route, it doesn't matter the order the others are added. We will optimize the route for the user.
+- We added layers of functionality to the map, such as changing the color of chosen map markers to make it easier to visualize, statistics for your planned route and a custom full screen toggle to ensure that these layers were included when the map goes full screen.
+- We leveraged localStorage to store saved routes, so that the saved map, markers and associated route can be recalled at any time.
+- The site is fully responsive across all screen sizes. 
 
 
 ## Thoughts for Future Development

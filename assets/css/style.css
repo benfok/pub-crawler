@@ -194,7 +194,7 @@ section {
     border: solid var(--black) 5px;
     border-radius: 25px;
     background-color: var(--black);
-    color: var(--white);
+    color: var(--yellow);
     text-align: center;
 }
 
@@ -205,12 +205,12 @@ section {
     font-weight: bold;
 }
 
-.brewery-list, .saved-list:hover {
+.saved-list:hover {
     cursor: pointer;
 }
 
-.brewery-list:hover > .brewery-name {
-    color: var(--white);
+.brewery-address {
+    color: var(--white); 
 }
 
 .saved-list:hover {

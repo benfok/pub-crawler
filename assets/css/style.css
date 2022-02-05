@@ -232,12 +232,30 @@ section {
     width: 100%;
 }
 
-.stats {
-    padding: 1rem 2rem;
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
+#toggle-fullscreen {
     z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 5px;
+    padding: 10px;
+}
+
+#route-details {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    z-index: 1;
+    margin: 10px 0 0 5px;
+}
+
+#route-details li {
+    padding: 5px;
+    background-color: var(--white);
+    opacity: 0.8;
+    font-size: 16px;
+    text-align: left;
+
 }
 
 .add-route-btn {
@@ -278,10 +296,6 @@ section {
 
 .mapboxgl-popup-content {
     padding: 5px 20px 10px 5px !important;
-}
-
-#route-details {
-    font-size: 16px;
 }
 
 /* The Modal (background) */

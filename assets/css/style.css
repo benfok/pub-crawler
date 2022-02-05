@@ -34,6 +34,10 @@ h2 {
    font-size: 200%; 
 }
 
+h2, h3 {
+    text-align: center;
+}
+
 /* Main area structure */
 main {
     display: flex;
@@ -84,7 +88,7 @@ section {
 
 #city-search-input {
     margin: 3% 5% 0% 0%;
-    width: 75%;
+    width: 70%;
 }
 
 .btn {
@@ -176,6 +180,8 @@ section {
     margin-top: 2%;
 }
 
+
+/* List of saved routes */
 .brewery-list, .saved-list {
     margin: 20px 0px;
     padding: 4%;
@@ -277,6 +283,20 @@ section {
 }
 
 /* The Modal (background) */
+#modal-btn {
+    position: fixed;
+    top: 1%;
+    right: 1%;
+    z-index: 2;
+    background-color: var(--white);
+    color: var(--black);
+    border: solid var(--black) 2px;
+    border-radius: 30px;
+    padding: .75%;
+    font-weight:bold;
+}
+
+
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
@@ -351,6 +371,18 @@ section {
     line-height: 1.5;
 }
 
+@media screen and (max-width: 1138px) {
+    #city-search-input {
+        width: 58%;
+        font-size: 0.7em;
+    }
+
+    #route-form {
+        width: 80%;
+    }
+}
+
+
 
 @media screen and (max-width: 768px) {
     h1 {
@@ -365,21 +397,33 @@ section {
 
     #city-search-input {
         width: 70%;
+        font-size: 1em;
     }
 
     .column {
         width: 95% !important;
     }
 
-    #route-form {
-        width: 70%;
-    }
+
 
     #route-control-area {
-        justify-content: center;
+        justify-content: space-evenly;
+        text-align: center;
+    }
+
+    #route-form {
+        width: 80%;
+    }
+
+    #modal-btn {
+        padding: 1.25%;
+    }
+
+    #second-column {
+        order: 1;
     }
 
     #first-column {
-       order: 2;
+        order: 2;
     }
 }

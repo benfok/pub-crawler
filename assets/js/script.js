@@ -48,7 +48,7 @@ const getCities = function(searchEntry) {
 // render up to 5 locations to the user
 const renderResults = function(data){
     // clear the search results
-    searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>'; 
+    searchResults.innerHTML = '<li class="city-option my-location" id="current-location-option" onclick="getMyLocation()">Use My Current Location</li>'; 
     // if no results returned display a message
     let str = '';
     if (data.length === 0) {
@@ -75,34 +75,32 @@ const renderResults = function(data){
 const localeSelect = function(){
     document.querySelectorAll('.locations').forEach(function(locale){
         locale.addEventListener('click', function(){
-            searchResults.innerHTML = '<li class="city-option my-location">Use My Current Location</li>'; // clear search results after click
+            searchResults.innerHTML = '<li class="city-option my-location" id="current-location-option" onclick="getMyLocation()">Use My Current Location</li>'; // clear search results after click
             chosenLocation = locale;
             renderMap();
             });
     });
 };
 
-    
 // load current location. Note that this creates a browser alert to the user to accept use of their current location
-const myLocation = function (){
-    document.querySelector('.my-location').addEventListener('click', function(){
+const getMyLocation = function (){
         const options = {
             enableHighAccuracy: true,
             timeout: 5000,
             maximumAge: 0
         };
         function success(loc) {
-            let crd = loc.coords;
-            let listEl = `<li class="city-option my-location locations" data-lat="${crd.latitude}" data-long="${crd.longitude}">My Current Location</li>`;
-            searchResults.innerHTML = listEl;
-            chosenLocation = document.querySelector('.locations');
+            let elem = document.createElement('li');
+            elem.dataset.long = loc.coords.longitude;
+            elem.dataset.lat = loc.coords.latitude;
+            elem.textContent = 'My Location';
+            chosenLocation = elem;
             renderMap();
         };
         function error(err) {
             console.warn(`ERROR(${err.code}): ${err.message}`);
         };
         navigator.geolocation.getCurrentPosition(success, error, options);
-    });
 };
 
  // function that renders or resets the map. Called from search selection, clear route button or during the restoration of a saved route to reset variables
@@ -501,6 +499,5 @@ document.getElementById('clear-route').addEventListener('click', function(event)
 window.addEventListener('load', function() {
     getSavedRoutes();
     modalControl();
-    myLocation();
     moveSearchBox();
 });

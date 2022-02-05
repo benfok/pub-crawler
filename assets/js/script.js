@@ -56,7 +56,6 @@ const renderResults = function(data){
         str += listEl;
     // if results are displayed render them to the page and include the lat and long data to pass into the location API call
     } else {
-        document.getElementById('favorite-results-area').className = 'results-area';
         for (let i=0; i < data.length; i++) {
             if (data[i].state == undefined) {
             data[i].state = '';
@@ -107,6 +106,7 @@ const getMyLocation = function (){
  // return closest pubs to location selected. Limit is 25 results or a 5000 meter radius. 
 const renderMap = function(){
     //reset variables
+    document.getElementById('favorite-results-area').className = 'results-area';
     document.getElementById('route-details').innerHTML = '';
     routeList.innerHTML = '';
     markerCounter = 0;

@@ -45,3 +45,4 @@ SO THAT I can easily revisit them later or pull them up when I am out on the tow
 ![Screenshot-2](./assets/images/displaying-route.JPG "Displaying a Route")
 ![Screenshot-3](./assets/images/help-modal.JPG "Modal with helpful instructions")
 ![Screenshot-4](./assets/images/mobile-view.JPG "Mobile View")
+

@@ -90,7 +90,11 @@ const getMyLocation = function (){
             maximumAge: 0
         };
         function success(loc) {
-            chosenLocation = {dataset: {long: loc.coords.longitude, lat: loc.coords.latitude}};
+            let elem = document.createElement('li');
+            elem.dataset.long = loc.coords.longitude;
+            elem.dataset.lat = loc.coords.latitude;
+            elem.textContent = 'My Location';
+            chosenLocation = elem;
             renderMap();
         };
         function error(err) {

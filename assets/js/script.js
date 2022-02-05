@@ -84,33 +84,32 @@ const localeSelect = function(){
 
     
 // load current location. Note that this creates a browser alert to the user to accept use of their current location
-document.querySelector('.my-location').addEventListener('click', function(){
-    const options = {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-    };
-        
-    function success(loc) {
-        let crd = loc.coords;
-        let listEl = `<li class="city-option my-location locations" data-lat="${crd.latitude}" data-long="${crd.longitude}">My Current Location</li>`;
-        searchResults.innerHTML = listEl;
-        chosenLocation = document.querySelector('.locations');
-        renderMap();
-    };
-        
-    function error(err) {
-        console.warn(`ERROR(${err.code}): ${err.message}`);
-    };
-        
-    navigator.geolocation.getCurrentPosition(success, error, options);
-    
-});
+const myLocation = function (){
+    document.querySelector('.my-location').addEventListener('click', function(){
+        const options = {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        };
+        function success(loc) {
+            let crd = loc.coords;
+            let listEl = `<li class="city-option my-location locations" data-lat="${crd.latitude}" data-long="${crd.longitude}">My Current Location</li>`;
+            searchResults.innerHTML = listEl;
+            chosenLocation = document.querySelector('.locations');
+            renderMap();
+        };
+        function error(err) {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+        };
+        navigator.geolocation.getCurrentPosition(success, error, options);
+    });
+};
 
  // function that renders or resets the map. Called from search selection, clear route button or during the restoration of a saved route to reset variables
  // return closest pubs to location selected. Limit is 25 results or a 5000 meter radius. 
 const renderMap = function(){
     //reset variables
+    document.getElementById('route-details').innerHTML = '';
     routeList.innerHTML = '';
     markerCounter = 0;
     mapReady = false;
@@ -148,11 +147,9 @@ const loadMap = function(data){
     document.querySelector('#map-header').className = '';
     document.querySelector('#map-header-text').textContent = chosenLocation.textContent;
     // remove old map if existing
-    if(map !== undefined) {
-        document.getElementById('map').innerHTML = '';
-        map = undefined;
-    }
-
+    map = undefined;
+    document.getElementById('map').innerHTML = '<button id="toggle-fullscreen" class="btn">Toggle Fullscreen</button><ul id="route-details"></ul>';
+    
     mapboxgl.accessToken = apiKeyMap;
     map = new mapboxgl.Map({
         container: 'map', // container ID
@@ -239,9 +236,8 @@ const loadMap = function(data){
 let addToRoute = function () {
     if (markerCounter < 10) {
         const button = document.querySelector('.add-route-btn');
-        const ul = document.getElementById('route-ul');
         let li = button.parentElement.dataset.listEl;
-        ul.insertAdjacentHTML('beforeend', li);
+        routeList.insertAdjacentHTML('beforeend', li);
         // record that we added a marker
         markerCounter++;
         let popupId = button.dataset.marker;
@@ -301,7 +297,7 @@ let showRouteDetails = function (data){
     let distance = data.trips[0].distance / 1000;
     let kms = distance.toFixed(2);
     let stops = data.trips[0].legs.length + 1;
-    document.getElementById('route-details').innerHTML = `<p class="stats"><span><strong>Stops:</strong> ${stops}</span><span><strong>Total Walk Time:</strong> ${hours}hrs</span><span><strong>Total Distance:</strong> ${kms}km</span></p>`;
+    document.getElementById('route-details').innerHTML = `<li><strong>Stops:</strong> ${stops}</li><li><strong>Total Walk Time:</strong> ${hours}hrs</li><li><strong>Total Distance:</strong> ${kms}km</li>`;
 };
 
 // event listener for save route button
@@ -496,7 +492,6 @@ document.getElementById('create-route').addEventListener('click', function(event
 // event listener for clear route button
 document.getElementById('clear-route').addEventListener('click', function(event){
     event.preventDefault();
-    document.getElementById('favorite-results-area').className += ' hidden';
     renderMap();
 });
 
@@ -504,4 +499,5 @@ document.getElementById('clear-route').addEventListener('click', function(event)
 window.addEventListener('load', function() {
     getSavedRoutes();
     modalControl();
+    myLocation();
 });

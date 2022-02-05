@@ -178,6 +178,7 @@ section {
     border: solid var(--black) 2px;
     width: 100%;
     margin-top: 2%;
+    padding: 5px;
 }
 
 
@@ -236,6 +237,7 @@ section {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
+    z-index: 1;
 }
 
 .add-route-btn {
@@ -294,13 +296,18 @@ section {
     border-radius: 30px;
     padding: .75%;
     font-weight:bold;
+    cursor: pointer;
+}
+
+#modal-btn:hover, #modal-btn:focus {
+    background-color: var(--yellow);
 }
 
 
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 2; /* Sit on top */
     padding-top: 100px; /* Location of the box */
     left: 0;
     top: 0;

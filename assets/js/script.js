@@ -149,7 +149,7 @@ const loadMap = function(data){
     // remove old map if existing
     map = undefined;
     document.getElementById('map').innerHTML = '<button id="toggle-fullscreen" class="btn">Toggle Fullscreen</button><ul id="route-details"></ul>';
-    
+
     mapboxgl.accessToken = apiKeyMap;
     map = new mapboxgl.Map({
         container: 'map', // container ID
@@ -474,14 +474,16 @@ const modalControl = function(){
 };
 
 // move the search function box to the top of the page in mobile view
-window.addEventListener("resize",function () {
-    if (window.innerWidth < 768) {
+const moveSearchBox = function () {
+    const size = window.matchMedia('(max-width: 768px)')
+    if (size.matches) {
         document.getElementById("second-column").prepend(document.getElementById('search-area'));
-    } else if (window.innerWidth >= 768) {
+    } else {
         document.getElementById("first-column").prepend(document.getElementById('search-area'));
-    }
-})
-
+    };
+}
+// and upon resizing the viewport
+window.addEventListener('resize', moveSearchBox);
 
 // event listener for create route button
 document.getElementById('create-route').addEventListener('click', function(event){
@@ -500,4 +502,5 @@ window.addEventListener('load', function() {
     getSavedRoutes();
     modalControl();
     myLocation();
+    moveSearchBox();
 });

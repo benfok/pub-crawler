@@ -1,8 +1,6 @@
 let searchResults = document.getElementById('cities-list'); // holds the results of the city search
 let routeList = document.querySelector('.route-list'); // holds the current route list of pubs
 let chosenLocation; // stores the current location selected and shown on the map
-let mapStartLat; // stores the starting latitude for the map based on the location chosen
-let mapStartLong; // stores the starting latitude for the map based on the location chosen
 let map = undefined; // stores the map and allows us to clear if new maps are loaded
 let source = turf.featureCollection([]); // the source data for the route
 const apiKeyMap = 'pk.eyJ1IjoiYmVuZm9rIiwiYSI6ImNrejBibzE4bDFhbzgyd213YXE3Ynp1MjAifQ.fbuWSwdUyN9SNuaJS_KLnw'; // api key for MapBox

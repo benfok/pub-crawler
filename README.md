@@ -36,7 +36,6 @@ SO THAT I can easily revisit them later or pull them up when I am out on the tow
 - We leveraged localStorage to store saved routes, so that the saved map, markers and associated route can be recalled at any time.
 - The site is fully responsive across all screen sizes. 
 
-
 ## Thoughts for Future Development
 - Offer more information about each pub within the marker popup, including hours, reviews, etc. Possibly using the Yelp API.
 - The ability to share saved routes with friends and to print a route.
@@ -44,6 +43,12 @@ SO THAT I can easily revisit them later or pull them up when I am out on the tow
 - Expand the idea beyond pubs to include retail, restaurants or tourist attractions.
 - Ability to edit the route as desired, and to more easily add and remove stops along the way.
 
+## Collaborators
+Built by:
+- Ben Fok [@benfok](https://github.com/benfok "Ben's Profile")
+- Mike Fitzpatrick [@mlfitz](https://github.com/mlfitz2 "Mike's Profile")
+- Patric Seaman [@Patisasea](https://github.com/Patisasea "Patric's Profile")
+- Daniel Klotz [@Dan-Klo](https://github.com/Dan-Klo "Daniel's Profile")
 
 ## Screenshots
 ![Screenshot-1](./assets/images/home-screen.JPG "Upon Loading")

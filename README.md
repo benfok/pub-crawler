@@ -44,6 +44,12 @@ SO THAT I can easily revisit them later or pull them up when I am out on the tow
 - Expand the idea beyond pubs to include retail, restaurants or tourist attractions.
 - Ability to edit the route as desired, and to more easily add and remove stops along the way.
 
+## Collaborators
+Built by:
+- Ben Fok ![@benfok](https://github.com/benfok "Ben's Profile")
+- Mike Fitzpatrick ![@mlfitz](https://github.com/mlfitz2 "Mike's Profile")
+- Patric Seaman ![@Patisasea](https://github.com/Patisasea "Patric's Profile")
+- Daniel Klotz ![@Dan-Klo](https://github.com/Dan-Klo "Daniel's Profile")
 
 ## Screenshots
 ![Screenshot-1](./assets/images/home-screen.JPG "Upon Loading")
